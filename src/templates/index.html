@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OSM Sandbox - OAuth2</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      background: url("static/background.jpg") no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      height: 100vh;
+      width: 100vw;
+    }
+    .modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.3);
+      visibility: visible;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="modal">
+    <button onclick="startAuth()">Login with OpenStreetMap</button>
+  </div>
+  <div id="output" style="width: auto"></div>
+  <script>
+    const client_id = "{{client_id}}";
+    const redirect_uri = "{{redirect_uri}}";
+    const osm_instance_scopes = "{{osm_instance_scopes}}";
+    const osm_instance_url = "{{osm_instance_url}}";
+    
+    function startAuth() {
+      const authUrl = `${osm_instance_url}/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${osm_instance_scopes}`;
+      console.log(`Redirecting to: ${authUrl}`);
+      window.location.href = authUrl;
+    }
+  </script>
+</body>
+</html>

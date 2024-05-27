@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  api:
+    image: rub21/osm-sandbox-user:v4
+    env_file:
+      - ./.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app
+    ports:
+      - '8000:8000'
+    working_dir: /app
+    networks:
+      - localnetwork
+  caddy:
+    image: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    restart: always
+    networks:
+      - localnetwork
+networks:
+  localnetwork:
+    driver: bridge

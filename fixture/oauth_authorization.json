@@ -1,0 +1,26 @@
+{
+  "version": "0.6",
+  "generator": "OpenStreetMap server",
+  "copyright": "OpenStreetMap and contributors",
+  "attribution": "http://www.openstreetmap.org/copyright",
+  "license": "http://opendatacommons.org/licenses/odbl/1-0/",
+  "user": {
+    "id": 510836,
+    "display_name": "Rub21",
+    "account_created": "2011-08-23T15:54:31Z",
+    "description": "",
+    "contributor_terms": { "agreed": true, "pd": true },
+    "img": {
+      "href": "https://www.openstreetmap.org/rails/active_storage/representations/redirect/eyJfcmFpbHMiOnsiZGF0YSI6MTYwNDQsInB1ciI6ImJsb2JfaWQifX0=--c61b2b7ed3b66b1f7b778ee87423182c5266156c/eyJfcmFpbHMiOnsiZGF0YSI6eyJmb3JtYXQiOiJqcGciLCJyZXNpemVfdG9fbGltaXQiOlsxMDAsMTAwXX0sInB1ciI6InZhcmlhdGlvbiJ9fQ==--71e417a328c02e35ec87b6c7cd4e4524c74e4ec8/1094969_583857618331821_304652500_n.jpg"
+    },
+    "roles": [],
+    "changesets": { "count": 28603 },
+    "traces": { "count": 38 },
+    "blocks": { "received": { "count": 0, "active": 0 } },
+    "languages": ["en-US"],
+    "messages": {
+      "received": { "count": 105, "unread": 0 },
+      "sent": { "count": 62 }
+    }
+  }
+}
