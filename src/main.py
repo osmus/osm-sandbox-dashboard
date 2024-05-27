@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from requests_oauthlib import OAuth2Session
-# from .utils.database_utils import check_database_instance
+from utils.database_utils import check_database_instance
 
 app = FastAPI()
 app.title = "OSM-Sandbox API User"
@@ -20,8 +20,14 @@ oauth = OAuth2Session(
     client_id=client_id, redirect_uri=redirect_uri, scope=osm_instance_scopes
 )
 
+class CustomStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        response.headers["Cache-Control"] = "public, max-age=86400"
+        return response
+
 static_path = os.path.join(os.path.dirname(__file__), "static")
-app.mount("/static", StaticFiles(directory=static_path), name="static")
+app.mount("/static", CustomStaticFiles(directory=static_path), name="static")
 
 templates_path = os.path.join(os.path.dirname(__file__), "templates")
 templates = Jinja2Templates(directory=templates_path)
@@ -38,7 +44,7 @@ def home(request: Request):
     }
     return templates.TemplateResponse("index.html", req_obj)
 
-@app.get("/oauth_authorization", tags=["api"])
+@app.get("/oauth_authorization", tags=["Oauth"])
 async def get_user_info(code: str):
     try:
         token = oauth.fetch_token(
@@ -54,8 +60,7 @@ async def get_user_info(code: str):
         print(f"Error: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=400)
 
-# @app.get("/instances/{instance_name}", tags=["api"])
-# async def get_instance_status(instance_name: str):
-#     print(instance_name)
-#     status = check_database_instance(instance_name)
-#     return {"instance_name": instance_name, "status": status}
+@app.get("/instances/{name}", tags=["Api"])
+async def get_instance_status(name: str):
+    status = check_database_instance(name)
+    return {"name": name, "status": status}
