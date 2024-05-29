@@ -38,19 +38,37 @@
 <body>
   <div class="modal">
     <button onclick="startAuth()">Login with OpenStreetMap</button>
+    <div style="width: auto; display: block; margin-top: 10px;">{{stack}}</div>
+    <div style="width: auto; display: block; margin-top: 10px;">{{unique_id}}</div>
+
   </div>
-  <div id="output" style="width: auto"></div>
+
   <script>
     const client_id = "{{client_id}}";
     const redirect_uri = "{{redirect_uri}}";
     const osm_instance_scopes = "{{osm_instance_scopes}}";
     const osm_instance_url = "{{osm_instance_url}}";
-    
+
     function startAuth() {
+      saveStack()
       const authUrl = `${osm_instance_url}/oauth2/authorize?response_type=code&client_id=${client_id}&redirect_uri=${redirect_uri}&scope=${osm_instance_scopes}`;
       console.log(`Redirecting to: ${authUrl}`);
       window.location.href = authUrl;
     }
+
+    function saveStack() {
+      const stack = "{{stack}}";
+      localStorage.setItem('stack', stack);
+    }
+
+    function loadStack() {
+      const stack = localStorage.getItem('stack');
+      if (stack) {
+        document.querySelector('.modal div').innerHTML = stack;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadStack);
   </script>
 </body>
 </html>

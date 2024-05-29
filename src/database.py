@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-db_host = os.getenv("PG_DB_HOST", "host.docker.internal")
+db_host = os.getenv("POSTGRES_HOST", "host.docker.internal")
 db_user = os.getenv("POSTGRES_USER")
 db_password = os.getenv("POSTGRES_PASSWORD")
 db_name = os.getenv("POSTGRES_DB")
