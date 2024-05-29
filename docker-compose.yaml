@@ -7,7 +7,7 @@ services:
     ports:
       - '5432:5432'
   api:
-    image: rub21/osm-sandbox-user:v6
+    image: rub21/osm-sandbox-user:v7
     env_file:
       - ./.env
     build:
