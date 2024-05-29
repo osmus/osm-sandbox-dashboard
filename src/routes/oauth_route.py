@@ -9,6 +9,7 @@ from utils.sandbox_database import check_database_instance
 from utils.osm_credentials import get_osm_credentials
 from utils.sandbox_sessions import update_session
 from database import get_db
+from utils.sandbox_database import save_user_sandbox_db
 
 router = APIRouter()
 
@@ -37,8 +38,10 @@ async def get_user_info(request: Request, code: str, db: Session = Depends(get_d
         unique_id = request.cookies.get("unique_id")
         if unique_id:
             session_obj = update_session(db, unique_id, display_name)
+            save_user_sandbox_db(session_obj.get("stack"), session_obj.get("user"))
 
         # Add user in the Sandbox DB
+        
         
         return {"display_name": display_name}
     
