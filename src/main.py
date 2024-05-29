@@ -4,27 +4,32 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from requests_oauthlib import OAuth2Session
-from utils.database_utils import check_database_instance
+from database import engine
+
+from utils.sandbox_database import check_database_instance
+from utils.osm_credentials import get_osm_credentials
+from models import stacks_models
+from routes.stacks_route import router as stacks_route
+from routes.oauth_route import router as oauth_route
 
 app = FastAPI()
 app.title = "OSM-Sandbox API User"
 app.version = "0.1.0"
 
-client_id = os.getenv("OSM_CLIENT_ID")
-client_secret = os.getenv("OSM_CLIENT_SECRET")
-redirect_uri = os.getenv("REDIRECT_URI")
-osm_instance_url = os.getenv("OSM_INSTANCE_URL")
-osm_instance_scopes = "read_prefs"
+app = FastAPI()
+stacks_models.Base.metadata.create_all(bind=engine)
 
-oauth = OAuth2Session(
-    client_id=client_id, redirect_uri=redirect_uri, scope=osm_instance_scopes
+client_id, client_secret, redirect_uri, osm_instance_url, osm_instance_scopes = (
+    get_osm_credentials()
 )
+
 
 class CustomStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
         response = await super().get_response(path, scope)
         response.headers["Cache-Control"] = "public, max-age=86400"
         return response
+
 
 static_path = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", CustomStaticFiles(directory=static_path), name="static")
@@ -44,23 +49,7 @@ def home(request: Request):
     }
     return templates.TemplateResponse("index.html", req_obj)
 
-@app.get("/oauth_authorization", tags=["Oauth"])
-async def get_user_info(code: str):
-    try:
-        token = oauth.fetch_token(
-            f"{osm_instance_url}/oauth2/token", code=code, client_secret=client_secret
-        )
-        oauth.token = token
-        user_details_response = oauth.get(
-            f"{osm_instance_url}/api/0.6/user/details.json"
-        )
-        user_details = user_details_response.json()
-        return JSONResponse(content=user_details)
-    except Exception as e:
-        print(f"Error: {e}")
-        return JSONResponse(content={"error": str(e)}, status_code=400)
 
-@app.get("/instances/{name}", tags=["Api"])
-async def get_instance_status(name: str):
-    status = check_database_instance(name)
-    return {"name": name, "status": status}
+# Routes
+app.include_router(stacks_route)
+app.include_router(oauth_route)

@@ -2,10 +2,10 @@ import os
 import psycopg2
 from psycopg2 import OperationalError
 
-db_port = os.getenv("DB_PORT")
-db_user = os.getenv("DB_USER")
-db_password = os.getenv("DB_PASSWORD")
-db_name = os.getenv("DB_NAME")
+db_port = os.getenv("SANDBOX_PG_DB_PORT")
+db_user = os.getenv("SANDBOX_PG_DB_USER")
+db_password = os.getenv("SANDBOX_PG_DB_PASSWORD")
+db_name = os.getenv("SANDBOX_PG_DB_NAME")
 
 def check_database_instance(db_host: str) -> str:
     try:
