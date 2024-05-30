@@ -47,6 +47,7 @@ def save_user_sandbox_db(stack_name, user_name) -> str:
     query = """
     INSERT INTO users (email, display_name, pass_crypt, data_public, email_valid, status, terms_seen, terms_agreed, tou_agreed, creation_time, changesets_count)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    ON CONFLICT (email) DO NOTHING;
     """
     values = (f"{user_name}@sandbox.org", user_name, pass_crypt, True, True, "active", True, datetime.now(), datetime.now(), datetime.now(), 0)
     # Save
