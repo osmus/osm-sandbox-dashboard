@@ -1,0 +1,29 @@
+{{- if .Values.dashboard.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-dashboard-common-env
+data:
+    OSM_CLIENT_ID: {{ .Values.dashboard.env.OSM_CLIENT_ID | quote }}
+    OSM_CLIENT_SECRET: {{ .Values.dashboard.env.OSM_CLIENT_SECRET | quote }}
+    REDIRECT_URI: {{ .Values.dashboard.env.REDIRECT_URI | quote }}
+    OSM_INSTANCE_URL: {{ .Values.dashboard.env.OSM_INSTANCE_URL | quote }}
+    OSM_INSTANCE_SCOPES: {{ .Values.dashboard.env.OSM_INSTANCE_SCOPES | quote }}
+    ENVIRONMENT: {{ .Values.dashboard.env.ENVIRONMENT | quote }}
+    # postgres credentials
+    DB_PORT: "5432"
+    POSTGRES_HOST: {{ .Release.Name }}-db
+    POSTGRES_USER: {{ .Values.db.env.POSTGRES_USER | quote }}
+    POSTGRES_PASSWORD: {{ .Values.db.env.POSTGRES_PASSWORD | quote }}
+    POSTGRES_DB: {{ .Values.db.env.POSTGRES_DB | quote }}
+
+    # Sandbox credentials
+    DB_PORT: "5432"
+    SANDBOX_PG_DB_PORT: {{ .Values.dashboard.env.SANDBOX_PG_DB_PORT | quote }}
+    SANDBOX_PG_DB_USER: {{ .Values.dashboard.env.SANDBOX_PG_DB_USER | quote }}
+    SANDBOX_PG_DB_PASSWORD: {{ .Values.dashboard.env.SANDBOX_PG_DB_PASSWORD | quote }}
+    SANDBOX_PG_DB_NAME: {{ .Values.dashboard.env.SANDBOX_PG_DB_NAME | quote }}
+
+    # Domian
+    SANDBOX_DOMAIN: {{ .Values.dashboard.env.SANDBOX_DOMAIN | quote }}
+{{- end }}
