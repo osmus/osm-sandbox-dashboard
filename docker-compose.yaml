@@ -7,7 +7,7 @@ services:
     ports:
       - '5432:5432'
   api:
-    image: rub21/osm-sandbox-user:v8
+    image: rub21/osm-sandbox-user:v9
     env_file:
       - ./.env
     build:
@@ -18,11 +18,4 @@ services:
     ports:
       - '8000:8000'
     working_dir: /app
-  # caddy:
-  #   image: caddy
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - ./Caddyfile:/etc/caddy/Caddyfile
-  #   restart: always
+  
