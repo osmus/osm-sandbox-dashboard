@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Release.Name }}-db
+  name: {{ .Release.Name }}-dashboard-db
   labels:
     app: {{ template "osm-sandbox.name" . }}
     component: db-statefulset
@@ -14,14 +14,14 @@ spec:
     matchLabels:
       app: {{ template "osm-sandbox.name" . }}
       release: {{ .Release.Name }}
-      run: {{ .Release.Name }}-db
-  serviceName: {{ .Release.Name }}-db
+      run: {{ .Release.Name }}-dashboard-db
+  serviceName: {{ .Release.Name }}-dashboard-db
   template:
     metadata:
       labels:
         app: {{ template "osm-sandbox.name" . }}
         release: {{ .Release.Name }}
-        run: {{ .Release.Name }}-db
+        run: {{ .Release.Name }}-dashboard-db
     spec:
       containers:
         - name: {{ .Chart.Name }}-db
@@ -34,7 +34,7 @@ spec:
             - name: GET_HOSTS_FROM
               value: dns
             - name: POSTGRES_HOST
-              value: {{ .Release.Name }}-db
+              value: {{ .Release.Name }}-dashboard-db
             - name: POSTGRES_DB
               value: {{ .Values.db.env.POSTGRES_DB }}
             - name: POSTGRES_PASSWORD
@@ -88,7 +88,7 @@ spec:
         - name: postgres-storage
         {{- if .Values.db.persistenceDisk.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-pv-claim
+            claimName: {{ .Release.Name }}-dashboard-pv-claim
         {{- else }}
           emptyDir: {}
         {{- end }}

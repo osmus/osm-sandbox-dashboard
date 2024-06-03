@@ -12,7 +12,7 @@ data:
     ENVIRONMENT: {{ .Values.dashboard.env.ENVIRONMENT | quote }}
     # postgres credentials
     DB_PORT: "5432"
-    POSTGRES_HOST: {{ .Release.Name }}-db
+    POSTGRES_HOST: {{ .Release.Name }}-dashboard-db
     POSTGRES_USER: {{ .Values.db.env.POSTGRES_USER | quote }}
     POSTGRES_PASSWORD: {{ .Values.db.env.POSTGRES_PASSWORD | quote }}
     POSTGRES_DB: {{ .Values.db.env.POSTGRES_DB | quote }}

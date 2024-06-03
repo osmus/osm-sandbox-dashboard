@@ -5,7 +5,7 @@ from requests_oauthlib import OAuth2Session
 from sqlalchemy.orm import Session
 from utils.sandbox_database import check_database_instance, save_user_sandbox_db
 from utils.osm_credentials import get_osm_credentials
-from utils.sandbox_sessions import update_session
+from utils.sandbox_sessions import update_user_session
 from database import get_db
 
 router = APIRouter()
@@ -35,7 +35,7 @@ async def get_user_info(request: Request, code: str, db: Session = Depends(get_d
         # Update user in session
         unique_id = request.cookies.get("unique_id")
         if unique_id:
-            session_obj = update_session(db, unique_id, display_name)
+            session_obj = update_user_session(db, unique_id, display_name)
             save_user_sandbox_db(session_obj.get("stack"), session_obj.get("user"))
             # Construct the subdomain URL
             sub_domain_url = f"https://{session_obj.get('stack')}.{domain}/login?user={session_obj.get('user')}"
