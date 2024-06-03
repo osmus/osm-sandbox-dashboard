@@ -1,28 +1,26 @@
-
 import os
-import uuid
 from fastapi import APIRouter, Request, Query, Depends, HTTPException
-from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
-from starlette.middleware.base import BaseHTTPMiddleware
 
 # Import database utils
-from database import engine, get_db
+from database import get_db
+
 # Import utils
-from utils.sandbox_database import check_database_instance
 from utils.osm_credentials import get_osm_credentials
 from utils.sandbox_sessions import save_update_stack_session
-# Import models
-from models import stacks_models
-from models import sessions_models
-# Import routes
-from routes.stacks_route import router as stacks_route
-from routes.oauth_route import router as oauth_route
 
-client_id, client_secret, redirect_uri, osm_instance_url, osm_instance_scopes = get_osm_credentials()
+(
+    client_id,
+    client_secret,
+    redirect_uri,
+    osm_instance_url,
+    osm_instance_scopes,
+) = get_osm_credentials()
+
 router = APIRouter()
+
 
 # Custom static files to set cache control
 class CustomStaticFiles(StaticFiles):
@@ -30,6 +28,7 @@ class CustomStaticFiles(StaticFiles):
         response = await super().get_response(path, scope)
         response.headers["Cache-Control"] = "public, max-age=86400"
         return response
+
 
 static_path = os.path.join(os.path.dirname(__file__), "./../static")
 router.mount("/static", CustomStaticFiles(directory=static_path), name="static")
@@ -39,11 +38,13 @@ templates = Jinja2Templates(directory=templates_path)
 
 router = APIRouter()
 
+
 # Home route
 @router.get("/", tags=["Home"])
 def home(request: Request, stack: str = Query(None), db: Session = Depends(get_db)):
+    """Home endpoint for user login."""
     unique_id = request.cookies.get("unique_id")
-    ## Check stack is not null
+    # Check stack is not null
     if stack is None:
         raise HTTPException(status_code=404, detail="Stack not found")
     if unique_id and stack:
@@ -55,6 +56,6 @@ def home(request: Request, stack: str = Query(None), db: Session = Depends(get_d
         "osm_instance_url": osm_instance_url,
         "osm_instance_scopes": osm_instance_scopes,
         "stack": stack,
-        "unique_id": unique_id
+        "unique_id": unique_id,
     }
     return templates.TemplateResponse("index.html", req_obj)
