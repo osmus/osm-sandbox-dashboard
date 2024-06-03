@@ -8,6 +8,7 @@ db_port = os.getenv("SANDBOX_PG_DB_PORT")
 db_user = os.getenv("SANDBOX_PG_DB_USER")
 db_password = os.getenv("SANDBOX_PG_DB_PASSWORD")
 db_name = os.getenv("SANDBOX_PG_DB_NAME")
+domain = os.getenv("SANDBOX_DOMAIN")
 
 # Start hasher de Argon2
 argon2Hasher = PasswordHasher(
@@ -57,7 +58,7 @@ def save_user_sandbox_db(stack_name, user_name) -> str:
     ON CONFLICT (email) DO NOTHING;
     """
     values = (
-        f"{user_name}@sandbox.org",
+        f"{user_name}@{stack_name}.{domain}",
         user_name,
         pass_crypt,
         True,

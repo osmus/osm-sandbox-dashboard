@@ -1,4 +1,0 @@
-[pydocstyle]
-convention = google
-add-ignore = D100
-match-dir = (?!charts).*
