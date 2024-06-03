@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
-from typing import List, Annotated
+from typing import Annotated
 from models import stacks_models as models
 from sqlalchemy.orm import Session
 import datetime
@@ -8,13 +8,16 @@ from database import get_db
 
 router = APIRouter()
 
+
 class StackBase(BaseModel):
     name: str
     status: str
     start_date: datetime.date
     end_date: datetime.date
 
+
 db_dependency = Annotated[Session, Depends(get_db)]
+
 
 @router.post("/stacks", response_model=StackBase, tags=["Stacks"])
 async def create_stack(stack: StackBase, db: db_dependency):
@@ -28,6 +31,7 @@ async def create_stack(stack: StackBase, db: db_dependency):
     db.commit()
     db.refresh(db_stack)
     return db_stack
+
 
 @router.get("/stacks", tags=["Stacks"])
 async def get_stacks(db: db_dependency):
