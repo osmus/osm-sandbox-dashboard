@@ -6,13 +6,20 @@ from models.sessions_models import Sessions
 
 
 def model_to_dict(model):
+    """Convert sqlalchemy model to dict"""
     return {
         column.name: getattr(model, column.name) for column in model.__table__.columns
     }
 
 
-# Save or update session and stack name
 def save_update_stack_session(db: Session, unique_id: str, stack: str):
+    """Save or update session and stack name
+
+    Args:
+        db (Session): database session
+        unique_id (str): cookie unique identifier
+        stack (str): stack name
+    """
     try:
         db_session = db.query(sessions_models.Sessions).filter_by(id=unique_id).first()
         if db_session:
@@ -30,6 +37,12 @@ def save_update_stack_session(db: Session, unique_id: str, stack: str):
 
 
 def update_user_session(db: Session, unique_id: str, user: str):
+    """Update session user
+
+    Args:
+        db (Session): database session
+        unique_id (str): cookie unique identifier
+    """
     db_session = db.query(Sessions).filter(Sessions.id == unique_id).first()
     if db_session:
         db_session.user = user

@@ -1,5 +1,3 @@
-"""This module sets up the database connection using SQLAlchemy."""
-
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

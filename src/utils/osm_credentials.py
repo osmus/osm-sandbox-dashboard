@@ -8,4 +8,5 @@ osm_instance_scopes = os.getenv("OSM_INSTANCE_SCOPES")
 
 
 def get_osm_credentials():
+    """Returns the OSM credentials"""
     return client_id, client_secret, redirect_uri, osm_instance_url, osm_instance_scopes
