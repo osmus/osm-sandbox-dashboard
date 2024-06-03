@@ -7,11 +7,11 @@ services:
     ports:
       - '5432:5432'
   api:
-    image: rub21/osm-sandbox-user:v10
+    image: rub21/osm-sandbox-dashboard:v1
     env_file:
       - ./.env
     build:
-      context: .
+      context: images/dashboard/
       dockerfile: Dockerfile
     volumes:
       - ./src:/app

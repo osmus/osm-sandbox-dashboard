@@ -1,0 +1,5 @@
+dashboard:
+  enabled: true
+  image:
+    name: ghcr.io/osmus/osm-sandbox-dashboard
+    tag: 0.0.1-0.dev.git.17.h500edbb

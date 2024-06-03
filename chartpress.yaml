@@ -1,0 +1,8 @@
+charts:
+  - name: charts
+    imagePrefix: ghcr.io/osmus/osm-sandbox-
+    images:
+      dashboard:
+        valuesPath: dashboard.image
+    valuesFiles:
+      - charts/values.template.yaml

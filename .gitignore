@@ -145,4 +145,5 @@ data/
 .DS_Store
 tests/.DS_Store
 .env
-values.yaml
+values.dev.yaml
+values.staging.yaml
