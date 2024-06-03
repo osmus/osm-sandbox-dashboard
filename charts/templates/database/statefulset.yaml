@@ -1,0 +1,103 @@
+{{- if .Values.db.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-dashboard-db
+  labels:
+    app: {{ template "osm-sandbox.name" . }}
+    component: db-statefulset
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "osm-sandbox.name" . }}
+      release: {{ .Release.Name }}
+      run: {{ .Release.Name }}-dashboard-db
+  serviceName: {{ .Release.Name }}-dashboard-db
+  template:
+    metadata:
+      labels:
+        app: {{ template "osm-sandbox.name" . }}
+        release: {{ .Release.Name }}
+        run: {{ .Release.Name }}-dashboard-db
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-db
+          image: "{{ .Values.db.image.name }}:{{ .Values.db.image.tag }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: GET_HOSTS_FROM
+              value: dns
+            - name: POSTGRES_HOST
+              value: {{ .Release.Name }}-dashboard-db
+            - name: POSTGRES_DB
+              value: {{ .Values.db.env.POSTGRES_DB }}
+            - name: POSTGRES_PASSWORD
+              value: {{ quote .Values.db.env.POSTGRES_PASSWORD }}
+            - name: POSTGRES_USER
+              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+            - name: PGUSER
+              value: {{ default "postgres" .Values.db.env.POSTGRES_USER | quote }}
+            - name: ENVIRONMENT
+              value: {{ .Values.environment }}
+            - name: PGDATA
+              value: {{ .Values.db.persistenceDisk.mountPath }}
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - name: LOG_STATEMENT
+              value: {{ default "none" .Values.db.env.LOG_STATEMENT | quote }}
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 120
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - exec pg_isready --host $POD_IP
+            initialDelaySeconds: 5
+            timeoutSeconds: 3
+            periodSeconds: 5
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: {{ .Values.db.persistenceDisk.mountPath }}
+              subPath: {{ .Values.db.persistenceDisk.subPath }}
+            - name: shared-memory
+              mountPath: /dev/shm
+          {{- if .Values.db.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ .Values.db.resources.requests.memory }}
+              cpu: {{ .Values.db.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.db.resources.limits.memory }}
+              cpu: {{ .Values.db.resources.limits.cpu }}
+          {{- end }}
+      volumes:
+        - name: postgres-storage
+        {{- if .Values.db.persistenceDisk.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-dashboard-pv-claim
+        {{- else }}
+          emptyDir: {}
+        {{- end }}
+        - name: shared-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.db.sharedMemorySize }}
+      {{- if .Values.db.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.db.nodeSelector.label_key }} : {{ .Values.db.nodeSelector.label_value }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,22 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+      - id: check-yaml
+        exclude: charts/
+      - id: end-of-file-fixer
+        exclude: charts/
+      - id: trailing-whitespace
+        exclude: charts/
+  - repo: https://github.com/psf/black
+    rev: 22.1.0
+    hooks:
+      - id: black
+        language_version: python
+        additional_dependencies: ['click==8.0.4']
+        exclude: ^charts/
+  - repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+      - id: flake8
+        exclude: charts/
