@@ -1,10 +1,10 @@
 apiVersion: v1
-name: osm-sandbox-deploy
-version: 0.0.1-0.dev.git.3.h0463cfd
+name: osm-sandbox-dashboard
+version: 0.0.1-0.dev.git.11.h725dc48
 appVersion: 0.0.1
-description: OSM sandbox Deploy Chart
-home: https://github.com/GeoCompas/osm-sandbox-deploy
+description: OSM sandbox dashboard Chart
+home: https://github.com/GeoCompas/osm-sandbox-dashboard
 sources:
-  - https://github.com/GeoCompas/osm-sandbox-deploy
+  - https://github.com/GeoCompas/osm-sandbox-dashboard
 kubeVersion: '>=1.15.0-0'
 tillerVersion: '>=2.11.0-0'

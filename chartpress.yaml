@@ -1,0 +1,6 @@
+charts:
+  - name: charts
+    imagePrefix: ghcr.io/osmus/
+    images:
+      dashboard:
+        valuesPath: ./
