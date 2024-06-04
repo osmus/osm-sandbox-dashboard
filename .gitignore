@@ -146,4 +146,3 @@ data/
 tests/.DS_Store
 .env
 values.dev.yaml
-values.staging.yaml
