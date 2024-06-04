@@ -1,5 +1,6 @@
 environment: dashboard
 serviceType: ClusterIP
+createClusterIssuer: false
 adminEmail: admin@osmsandbox.us
 db:
   enabled: true
