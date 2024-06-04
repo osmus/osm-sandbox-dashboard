@@ -25,11 +25,11 @@ spec:
       containers:
         - name: {{ .Chart.Name }}-dashboard
           image: "{{ .Values.dashboard.image.name }}:{{ .Values.dashboard.image.tag }}"
-          command:
-            - /bin/sh
-            - -c
-            - |
-              sleep 300000000000000
+          # command:
+          #   - /bin/sh
+          #   - -c
+          #   - |
+          #     sleep 300000000000000
           ports:
             - name: http
               containerPort: 8000
@@ -37,7 +37,7 @@ spec:
           # livenessProbe:
           #   httpGet:
           #     path: /
-          #     port: 80
+          #     port: 8000
           #   initialDelaySeconds: 120
           #   timeoutSeconds: 60
           {{- if .Values.dashboard.resources.enabled }}
