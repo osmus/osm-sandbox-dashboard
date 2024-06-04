@@ -1,5 +1,5 @@
 charts:
-  - name: charts
+  - name: dashboard-charts
     imagePrefix: ghcr.io/osmus/osm-sandbox-
     images:
       dashboard:

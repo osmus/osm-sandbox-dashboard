@@ -1,0 +1,61 @@
+environment: dashboard
+serviceType: ClusterIP
+adminEmail: admin@osmsandbox.us
+db:
+  enabled: true
+  image:
+    name: postgres
+    tag: 16
+  nodeSelector:
+    enabled: true
+    label_key: nodegroup_type
+    label_value: t3_medium_ondemand
+  env:
+    POSTGRES_DB: {{POSTGRES_DB}}
+    POSTGRES_USER: {{POSTGRES_USER}}
+    POSTGRES_PASSWORD: {{POSTGRES_PASSWORD}}
+  persistenceDisk:
+    enabled: false
+    accessMode: ReadWriteOnce
+    mountPath: /var/lib/postgresql/data
+    subPath: postgresql-db
+    AWS_ElasticBlockStore_volumeID: vol-09964172ef71bc8e8
+    AWS_ElasticBlockStore_size: 50Gi
+  resources:
+    enabled: false
+    requests:
+      memory: "10Gi"
+      cpu: "5"
+    limits:
+      memory: "10Gi"
+      cpu: "5"
+  sharedMemorySize: 16Mi
+dashboard:
+  enabled: true
+  ingressDomain: dashboard.osmsandbox.us
+  env:
+    OSM_CLIENT_ID: {{OSM_CLIENT_ID}}
+    OSM_CLIENT_SECRET: {{OSM_CLIENT_SECRET}}
+    REDIRECT_URI: 'https://dashboard.osmsandbox.us/oauth_authorization'
+    OSM_INSTANCE_URL: 'https://www.openstreetmap.org'
+    OSM_INSTANCE_SCOPES: 'read_prefs'
+    # PG data
+    SANDBOX_PG_DB_PORT: "5432"
+    SANDBOX_PG_DB_USER: {{SANDBOX_PG_DB_USER}}
+    SANDBOX_PG_DB_PASSWORD: {{SANDBOX_PG_DB_PASSWORD}}
+    SANDBOX_PG_DB_NAME: {{SANDBOX_PG_DB_NAME}}
+    ENVIRONMENT: 'dev'
+    # Main domain
+    SANDBOX_DOMAIN: 'boxes.osmsandbox.us'
+  resources:
+    enabled: false
+    requests:
+      memory: "512Mi"
+      cpu: "1"
+    limits:
+      memory: "512Mi"
+      cpu: "1"
+  nodeSelector:
+    enabled: true
+    label_key: nodegroup_type
+    label_value: t3_medium_ondemand
