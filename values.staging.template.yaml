@@ -10,7 +10,7 @@ db:
   nodeSelector:
     enabled: true
     label_key: nodegroup_type
-    label_value: t3_medium_ondemand
+    label_value: t3-medium-ondemand
   env:
     POSTGRES_DB: {{POSTGRES_DB}}
     POSTGRES_USER: {{POSTGRES_USER}}
@@ -60,4 +60,4 @@ dashboard:
   nodeSelector:
     enabled: true
     label_key: nodegroup_type
-    label_value: t3_medium_ondemand
+    label_value: t3-medium-ondemand
