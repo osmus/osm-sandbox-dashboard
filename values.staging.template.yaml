@@ -49,6 +49,9 @@ dashboard:
     ENVIRONMENT: 'dev'
     # Main domain
     SANDBOX_DOMAIN: 'boxes.staging.osmsandbox.us'
+    # EKS options
+    AWS_REGION: {{AWS_REGION}}
+    EKS_CLUSTER:  {{EKS_CLUSTER}}
   resources:
     enabled: false
     requests:

@@ -10,6 +10,7 @@ data:
     OSM_INSTANCE_URL: {{ .Values.dashboard.env.OSM_INSTANCE_URL | quote }}
     OSM_INSTANCE_SCOPES: {{ .Values.dashboard.env.OSM_INSTANCE_SCOPES | quote }}
     ENVIRONMENT: {{ .Values.dashboard.env.ENVIRONMENT | quote }}
+
     # postgres credentials
     DB_PORT: "5432"
     POSTGRES_HOST: {{ .Release.Name }}-dashboard-db
@@ -26,4 +27,9 @@ data:
 
     # Domian
     SANDBOX_DOMAIN: {{ .Values.dashboard.env.SANDBOX_DOMAIN | quote }}
+
+    # EKS
+    AWS_REGION: {{ .Values.dashboard.env.AWS_REGION | quote }}
+    EKS_CLUSTER: {{ .Values.dashboard.env.EKS_CLUSTER | quote }}
+
 {{- end }}
