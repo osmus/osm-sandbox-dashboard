@@ -6,15 +6,17 @@ services:
       - ./.env
     ports:
       - '5432:5432'
-  api:
-    image: rub21/osm-sandbox-dashboard:v1
+  dashboard:
+    platform: linux/amd64
+    image: rub21/osm-sandbox-dashboard:v5
     env_file:
       - ./.env
     build:
       context: images/dashboard/
       dockerfile: Dockerfile
-    volumes:
-      - ./src:/app
+
+    # volumes:
+    #   - ./src:/app
     ports:
       - '8000:8000'
-    working_dir: /app
+    # working_dir: /app
