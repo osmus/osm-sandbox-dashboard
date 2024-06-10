@@ -24,12 +24,9 @@ data:
     SANDBOX_PG_DB_USER: {{ .Values.dashboard.env.SANDBOX_PG_DB_USER | quote }}
     SANDBOX_PG_DB_PASSWORD: {{ .Values.dashboard.env.SANDBOX_PG_DB_PASSWORD | quote }}
     SANDBOX_PG_DB_NAME: {{ .Values.dashboard.env.SANDBOX_PG_DB_NAME | quote }}
+    OSM_SANDBOX_CHART: {{ .Values.dashboard.env.OSM_SANDBOX_CHART | quote }}
 
     # Domian
     SANDBOX_DOMAIN: {{ .Values.dashboard.env.SANDBOX_DOMAIN | quote }}
-
-    # EKS
-    AWS_REGION: {{ .Values.dashboard.env.AWS_REGION | quote }}
-    EKS_CLUSTER: {{ .Values.dashboard.env.EKS_CLUSTER | quote }}
 
 {{- end }}
