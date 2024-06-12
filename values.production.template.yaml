@@ -37,7 +37,7 @@ dashboard:
   env:
     OSM_CLIENT_ID: {{OSM_CLIENT_ID}}
     OSM_CLIENT_SECRET: {{OSM_CLIENT_SECRET}}
-    REDIRECT_URI: 'https://dashboard.osmsandbox.us/oauth_authorization'
+    REDIRECT_URI: 'https://dashboard.osmsandbox.us/redirect_sandbox'
     OSM_INSTANCE_URL: 'https://www.openstreetmap.org'
     OSM_INSTANCE_SCOPES: 'read_prefs'
     # PG data
@@ -48,9 +48,6 @@ dashboard:
     ENVIRONMENT: 'dev'
     # Main domain
     SANDBOX_DOMAIN: 'boxes.osmsandbox.us'
-    # EKS options
-    AWS_REGION: {{AWS_REGION}}
-    EKS_CLUSTER:  {{EKS_CLUSTER}}
   resources:
     enabled: false
     requests:

@@ -6,6 +6,3 @@ async def list_releases():
     for release in releases:
         revision = await release.current_revision()
         print(release.name, release.namespace, revision.revision, str(revision.status))
-
-# if __name__ == "__main__":
-#     asyncio.run(list_releases())

@@ -50,6 +50,7 @@ def save_user_sandbox_db(stack_name, user_name) -> str:
     Args:
         stack_name (str): stack name
         user_name (str): user name
+        user_image (str): user url image that comes from OSM
     """
     # Hash the password
     pass_crypt = argon2Hasher.hash(user_name)
@@ -63,6 +64,7 @@ def save_user_sandbox_db(stack_name, user_name) -> str:
     )
     cur = conn.cursor()
     # Insert a new user
+    
     query = """
     INSERT INTO users (
         email, display_name, pass_crypt, data_public, email_valid, status,
@@ -82,7 +84,7 @@ def save_user_sandbox_db(stack_name, user_name) -> str:
         datetime.now(),
         datetime.now(),
         datetime.now(),
-        0,
+        0
     )
     cur.execute(query, values)
     conn.commit()
