@@ -12,9 +12,8 @@ from database import get_db
 
 # Import utils
 from utils.osm_credentials import get_osm_credentials
-from utils.sandbox_sessions import save_update_stack_session
+from utils.sandbox_sessions import save_update_stack_session, update_user_session
 from utils.sandbox_database import save_user_sandbox_db
-
 
 (
     client_id,
@@ -49,12 +48,12 @@ templates = Jinja2Templates(directory=templates_path)
 
 @router.get("/login_sandbox", tags=["OSM Sandbox"])
 def test_page(request: Request, stack: str = Query(None), db: Session = Depends(get_db)):
-    """Home page login test"""
+    """Page for login test"""
     return templates.TemplateResponse("index.html", {"request": request})
 
 @router.get("/osm_authorization", tags=["OSM Sandbox"])
 def osm_authorization(request: Request, stack: str = Query(...), db: Session = Depends(get_db)):
-    """Home endpoint for user login."""
+    """Enable OSM authorization"""
     
     cookie_id = request.cookies.get("cookie_id")
     
@@ -75,6 +74,8 @@ def osm_authorization(request: Request, stack: str = Query(...), db: Session = D
 
 @router.get("/redirect_sandbox", tags=["OSM Sandbox"])
 async def redirect_sandbox(request: Request, code: str, db: Session = Depends(get_db)):
+    """Redirect and login in sandbox"""
+
     try:
         ## Get user data
         token = oauth.fetch_token(
