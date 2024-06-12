@@ -12,20 +12,20 @@ def model_to_dict(model):
     }
 
 
-def save_update_stack_session(db: Session, unique_id: str, stack: str):
+def save_update_stack_session(db: Session, cookie_id: str, stack: str):
     """Save or update session and stack name
 
     Args:
         db (Session): database session
-        unique_id (str): cookie unique identifier
+        cookie_id (str): cookie unique identifier
         stack (str): stack name
     """
     try:
-        db_session = db.query(sessions_models.Sessions).filter_by(id=unique_id).first()
+        db_session = db.query(sessions_models.Sessions).filter_by(id=cookie_id).first()
         if db_session:
             db_session.stack = stack
         else:
-            db_session = sessions_models.Sessions(id=unique_id, stack=stack)
+            db_session = sessions_models.Sessions(id=cookie_id, stack=stack)
             db.add(db_session)
         db.commit()
         db.refresh(db_session)
@@ -36,18 +36,18 @@ def save_update_stack_session(db: Session, unique_id: str, stack: str):
         raise HTTPException(status_code=500, detail="Failed to save or update session.")
 
 
-def update_user_session(db: Session, unique_id: str, user: str):
+def update_user_session(db: Session, cookie_id: str, user: str):
     """Update session user
 
     Args:
         db (Session): database session
-        unique_id (str): cookie unique identifier
+        cookie_id (str): cookie unique identifier
     """
-    db_session = db.query(Sessions).filter(Sessions.id == unique_id).first()
+    db_session = db.query(Sessions).filter(Sessions.id == cookie_id).first()
     if db_session:
         db_session.user = user
         db.commit()
         db.refresh(db_session)
         return model_to_dict(db_session)
     else:
-        raise ValueError(f"Session with id {unique_id} does not exist")
+        raise ValueError(f"Session with id {cookie_id} does not exist")
