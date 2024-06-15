@@ -1,5 +1,6 @@
 import uuid
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 
 # Import database utils
 from database import engine
@@ -19,6 +20,16 @@ app.version = "0.1.0"
 # Create tables
 stacks_models.Base.metadata.create_all(bind=engine)
 sessions_models.Base.metadata.create_all(bind=engine)
+
+
+# Home route
+@app.get("/", tags=["Home"])
+def home(request: Request):
+    response = {
+        "status": "0k",
+    }
+    return JSONResponse(content=response)
+
 
 # Include routes
 app.include_router(login_route)
