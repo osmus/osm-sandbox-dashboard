@@ -5,6 +5,8 @@ from models import stacks_models as models
 from sqlalchemy.orm import Session
 import datetime
 from database import get_db
+from utils.helm_deploy import list_releases
+
 
 router = APIRouter()
 
@@ -15,27 +17,26 @@ class StackBase(BaseModel):
     start_date: datetime.date
     end_date: datetime.date
 
-
 db_dependency = Annotated[Session, Depends(get_db)]
 
+# @router.post("/stacks", response_model=StackBase, tags=["Stacks"])
+# async def create_stack(stack: StackBase, db: db_dependency):
+#     db_stack = models.Stacks(
+#         name=stack.name,
+#         status=stack.status,
+#         start_date=stack.start_date,
+#         end_date=stack.end_date,
+#     )
+#     db.add(db_stack)
+#     db.commit()
+#     db.refresh(db_stack)
+#     return db_stack
 
-@router.post("/stacks", response_model=StackBase, tags=["Stacks"])
-async def create_stack(stack: StackBase, db: db_dependency):
-    db_stack = models.Stacks(
-        name=stack.name,
-        status=stack.status,
-        start_date=stack.start_date,
-        end_date=stack.end_date,
-    )
-    db.add(db_stack)
-    db.commit()
-    db.refresh(db_stack)
-    return db_stack
 
-
-@router.get("/stacks", tags=["Stacks"])
-async def get_stacks(db: db_dependency):
-    result = db.query(models.Stacks).all()
-    if not result:
-        raise HTTPException(status_code=404, detail="Stacks not found")
-    return result
+@router.get("/boxes", tags=["Boxes"])
+async def get_boxes(db: db_dependency):
+    releases = list_releases()
+    # result = db.query(models.Stacks).all()
+    # if not result:
+    #     raise HTTPException(status_code=404, detail="Stacks not found")
+    return releases
