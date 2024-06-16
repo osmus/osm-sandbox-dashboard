@@ -35,12 +35,12 @@ spec:
             - name: http
               containerPort: 8000
               protocol: TCP
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 8000
-          #   initialDelaySeconds: 120
-          #   timeoutSeconds: 60
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+            initialDelaySeconds: 120
+            timeoutSeconds: 60
           {{- if .Values.dashboard.resources.enabled }}
           resources:
             requests:

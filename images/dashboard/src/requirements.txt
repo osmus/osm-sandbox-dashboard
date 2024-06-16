@@ -9,3 +9,4 @@ psycopg2-binary
 argon2-cffi
 awscli
 pyhelm3
+kubernetes
