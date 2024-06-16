@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 import datetime
 from database import get_db
 from utils.helm_deploy import list_releases
+from utils.kubectl_deploy import list_pods
 
 
 router = APIRouter()
@@ -16,6 +17,7 @@ class StackBase(BaseModel):
     status: str
     start_date: datetime.date
     end_date: datetime.date
+
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -34,9 +36,14 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @router.get("/boxes", tags=["Boxes"])
-async def get_boxes(db: db_dependency):
-    releases = list_releases()
-    # result = db.query(models.Stacks).all()
-    # if not result:
-    #     raise HTTPException(status_code=404, detail="Stacks not found")
-    return releases
+async def get_boxes(db: Session = Depends(get_db)):
+    namespace = "default"
+    try:
+        releases = await list_releases(namespace)
+        pods = list_pods(namespace)
+        for release in releases:
+            release_name = release["name"]
+            release["pods"] = pods.get(release_name, [])
+        return releases
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

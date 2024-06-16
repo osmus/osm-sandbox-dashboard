@@ -2,4 +2,4 @@ dashboard:
   enabled: true
   image:
     name: ghcr.io/osmus/osm-sandbox-dashboard
-    tag: 0.0.1-0.dev.git.18.h69834ba
+    tag: 0.0.1-0.dev.git.35.hc7893ef
