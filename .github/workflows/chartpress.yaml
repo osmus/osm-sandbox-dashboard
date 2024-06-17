@@ -47,6 +47,7 @@ jobs:
           SANDBOX_OSM_id_key: ${{ secrets.STAGING_SANDBOX_OSM_ID_KEY }}
           SANDBOX_OAUTH_CLIENT_ID: ${{ secrets.STAGING_SANDBOX_OAUTH_CLIENT_ID }}
           SANDBOX_OAUTH_KEY: ${{ secrets.STAGING_SANDBOX_OAUTH_KEY }}
+          SANDBOX_BACKUP_FILE_URL: ${{ secrets.STAGING_SANDBOX_BACKUP_FILE_URL }}
           # Cluster
           AWS_REGION: ${{ secrets.AWS_REGION }}
           EKS_CLUSTER: ${{ secrets.EKS_CLUSTER }}
@@ -68,6 +69,7 @@ jobs:
           SANDBOX_OSM_id_key: ${{ secrets.PRODUCTION_SANDBOX_OSM_ID_KEY }}
           SANDBOX_OAUTH_CLIENT_ID: ${{ secrets.PRODUCTION_SANDBOX_OAUTH_CLIENT_ID }}
           SANDBOX_OAUTH_KEY: ${{ secrets.PRODUCTION_SANDBOX_OAUTH_KEY }}
+          SANDBOX_BACKUP_FILE_URL: ${{ secrets.PRODUCTION_SANDBOX_BACKUP_FILE_URL }}
           # Cluster
           AWS_REGION: ${{ secrets.AWS_REGION }}
           EKS_CLUSTER: ${{ secrets.EKS_CLUSTER }}
