@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import datetime
 from database import get_db
 from utils.helm_deploy import list_releases
-from utils.kubectl_deploy import list_pods
+from utils.kubectl_deploy import list_pods, normalize_status
 
 
 router = APIRouter()
@@ -43,7 +43,11 @@ async def get_boxes(db: Session = Depends(get_db)):
         pods = list_pods(namespace)
         for release in releases:
             release_name = release["name"]
-            release["pods"] = pods.get(release_name, [])
+            pods = pods.get(release_name, [])
+            ## Check if all pods are running
+            release_status = [pod.get("status") for pod in pods]
+            release["status"] = normalize_status(release_status)
+            release["pods"] = pods
         return releases
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

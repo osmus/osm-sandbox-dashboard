@@ -2,6 +2,7 @@ import asyncio
 from kubernetes import client, config
 from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
+from typing import List, Dict, Any
 
 
 def list_pods(namespace):
@@ -30,3 +31,10 @@ def list_pods(namespace):
         del pod["release"]
         del pod["namespace"]
     return grouped_pods
+
+
+def normalize_status(status_list: List[str]) -> str:
+    unique_statuses = set(status_list)
+    if len(unique_statuses) == 1 and "Running" in unique_statuses:
+        return "Running"
+    return "Pending"

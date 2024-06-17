@@ -14,12 +14,11 @@ async def list_releases(namespace):
     for release in releases:
         if release.name not in avoid_releases:
             revision = await release.current_revision()
-
             release_info = {
                 "name": release.name,
                 "namespace": release.namespace,
                 "revision": revision.revision,
-                "status": str(revision.status).replace("ReleaseRevisionStatus.", ""),
+                # "status": str(revision.status).replace("ReleaseRevisionStatus.", ""),
             }
             release_list.append(release_info)
 
