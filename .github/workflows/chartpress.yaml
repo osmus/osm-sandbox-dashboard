@@ -37,14 +37,17 @@ jobs:
           _input-file: 'values.staging.template.yaml'
           _format-key: '{{key}}'
           _output-file: 'values.staging.yaml'
-          POSTGRES_DB: ${{ secrets.STAGING_POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.STAGING_POSTGRES_USER }}
+          # Dashboard
           POSTGRES_PASSWORD: ${{ secrets.STAGING_POSTGRES_PASSWORD }}
           OSM_CLIENT_ID: ${{ secrets.STAGING_OSM_CLIENT_ID }}
           OSM_CLIENT_SECRET: ${{ secrets.STAGING_OSM_CLIENT_SECRET }}
-          SANDBOX_PG_DB_USER: ${{ secrets.STAGING_SANDBOX_PG_DB_USER }}
+          # Sandbox
           SANDBOX_PG_DB_PASSWORD: ${{ secrets.STAGING_SANDBOX_PG_DB_PASSWORD }}
           SANDBOX_PG_DB_NAME: ${{ secrets.STAGING_SANDBOX_PG_DB_NAME }}
+          SANDBOX_OSM_id_key: ${{ secrets.STAGING_SANDBOX_OSM_ID_KEY }}
+          SANDBOX_OAUTH_CLIENT_ID: ${{ secrets.STAGING_SANDBOX_OAUTH_CLIENT_ID }}
+          SANDBOX_OAUTH_KEY: ${{ secrets.STAGING_SANDBOX_OAUTH_KEY }}
+          # Cluster
           AWS_REGION: ${{ secrets.AWS_REGION }}
           EKS_CLUSTER: ${{ secrets.EKS_CLUSTER }}
       - name: Production - substitute secrets
@@ -54,16 +57,21 @@ jobs:
           _input-file: 'values.production.template.yaml'
           _format-key: '{{key}}'
           _output-file: 'values.production.yaml'
-          POSTGRES_DB: ${{ secrets.PRODUCTION_POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.PRODUCTION_POSTGRES_USER }}
+          # Dashboard
           POSTGRES_PASSWORD: ${{ secrets.PRODUCTION_POSTGRES_PASSWORD }}
           OSM_CLIENT_ID: ${{ secrets.PRODUCTION_OSM_CLIENT_ID }}
           OSM_CLIENT_SECRET: ${{ secrets.PRODUCTION_OSM_CLIENT_SECRET }}
+          # Sandbox
           SANDBOX_PG_DB_USER: ${{ secrets.PRODUCTION_SANDBOX_PG_DB_USER }}
           SANDBOX_PG_DB_PASSWORD: ${{ secrets.PRODUCTION_SANDBOX_PG_DB_PASSWORD }}
           SANDBOX_PG_DB_NAME: ${{ secrets.PRODUCTION_SANDBOX_PG_DB_NAME }}
+          SANDBOX_OSM_id_key: ${{ secrets.PRODUCTION_SANDBOX_OSM_ID_KEY }}
+          SANDBOX_OAUTH_CLIENT_ID: ${{ secrets.PRODUCTION_SANDBOX_OAUTH_CLIENT_ID }}
+          SANDBOX_OAUTH_KEY: ${{ secrets.PRODUCTION_SANDBOX_OAUTH_KEY }}
+          # Cluster
           AWS_REGION: ${{ secrets.AWS_REGION }}
           EKS_CLUSTER: ${{ secrets.EKS_CLUSTER }}
+
       - name: AWS Credentials
         if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v1

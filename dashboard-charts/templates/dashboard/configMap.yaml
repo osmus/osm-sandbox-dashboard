@@ -4,29 +4,40 @@ kind: ConfigMap
 metadata:
   name: {{ .Release.Name }}-dashboard-common-env
 data:
+    ENVIRONMENT: {{ .Values.dashboard.env.ENVIRONMENT | quote }}
+
+    # Dashboard
     OSM_CLIENT_ID: {{ .Values.dashboard.env.OSM_CLIENT_ID | quote }}
     OSM_CLIENT_SECRET: {{ .Values.dashboard.env.OSM_CLIENT_SECRET | quote }}
     REDIRECT_URI: {{ .Values.dashboard.env.REDIRECT_URI | quote }}
     OSM_INSTANCE_URL: {{ .Values.dashboard.env.OSM_INSTANCE_URL | quote }}
     OSM_INSTANCE_SCOPES: {{ .Values.dashboard.env.OSM_INSTANCE_SCOPES | quote }}
-    ENVIRONMENT: {{ .Values.dashboard.env.ENVIRONMENT | quote }}
 
-    # postgres credentials
+    # Dashboard Db Postgres credentials
     DB_PORT: "5432"
     POSTGRES_HOST: {{ .Release.Name }}-dashboard-db
     POSTGRES_USER: {{ .Values.db.env.POSTGRES_USER | quote }}
     POSTGRES_PASSWORD: {{ .Values.db.env.POSTGRES_PASSWORD | quote }}
     POSTGRES_DB: {{ .Values.db.env.POSTGRES_DB | quote }}
 
+    # Domian e.g boxes.osmsandbox.us
+    SANDBOX_DOMAIN: {{ .Values.dashboard.env.SANDBOX_DOMAIN | quote }}
+
     # Sandbox credentials
-    DB_PORT: "5432"
     SANDBOX_PG_DB_PORT: {{ .Values.dashboard.env.SANDBOX_PG_DB_PORT | quote }}
     SANDBOX_PG_DB_USER: {{ .Values.dashboard.env.SANDBOX_PG_DB_USER | quote }}
     SANDBOX_PG_DB_PASSWORD: {{ .Values.dashboard.env.SANDBOX_PG_DB_PASSWORD | quote }}
     SANDBOX_PG_DB_NAME: {{ .Values.dashboard.env.SANDBOX_PG_DB_NAME | quote }}
     OSM_SANDBOX_CHART: {{ .Values.dashboard.env.OSM_SANDBOX_CHART | quote }}
-
-    # Domian
-    SANDBOX_DOMAIN: {{ .Values.dashboard.env.SANDBOX_DOMAIN | quote }}
-
+    SANDBOX_MAILER_ADDRESS: {{ .Values.dashboard.env.SANDBOX_MAILER_ADDRESS | quote }}
+    SANDBOX_MAILER_DOMAIN: {{ .Values.dashboard.env.SANDBOX_MAILER_DOMAIN | quote }}
+    SANDBOX_MAILER_USERNAME: {{ .Values.dashboard.env.SANDBOX_MAILER_USERNAME | quote }}
+    SANDBOX_MAILER_PASSWORD: {{ .Values.dashboard.env.SANDBOX_MAILER_PASSWORD | quote }}
+    SANDBOX_OSM_id_key: {{ .Values.dashboard.env.SANDBOX_OSM_id_key | quote }}
+    SANDBOX_OAUTH_CLIENT_ID: {{ .Values.dashboard.env.SANDBOX_OAUTH_CLIENT_ID | quote }}
+    SANDBOX_OAUTH_KEY: {{ .Values.dashboard.env.SANDBOX_OAUTH_KEY | quote }}
+    SANDBOX_MAILER_FROM: {{ .Values.dashboard.env.SANDBOX_MAILER_FROM | quote }}
+    SANDBOX_ORGANIZATION_NAME: {{ .Values.dashboard.env.SANDBOX_ORGANIZATION_NAME | quote }}
+    SANDBOX_WEBSITE_STATUS: {{ .Values.dashboard.env.SANDBOX_WEBSITE_STATUS | quote }}
+    SANDBOX_BACKUP_FILE_URL: {{ .Values.dashboard.env.SANDBOX_BACKUP_FILE_URL | quote }}
 {{- end }}
