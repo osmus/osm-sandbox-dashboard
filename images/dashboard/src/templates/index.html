@@ -18,7 +18,9 @@
                         <form id="loginForm">
                             <div class="form-group">
                                 <label for="stack">Stack:</label>
-                                <input type="text" class="form-control" id="stack" name="stack" value="osm"  required>
+                                <select class="form-control" id="stack" name="stack" required>
+                                    <option value="">Select a stack</option>
+                                </select>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Login with OpenStreetMap</button>
                         </form>
@@ -31,6 +33,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/boxes')
+                .then(response => response.json())
+                .then(data => {
+                    const stackSelect = document.getElementById('stack');
+                    data.forEach(box => {
+                        const option = document.createElement('option');
+                        option.value = box.name;
+                        option.textContent = box.name;
+                        stackSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching boxes:', error));
+        });
+
         document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const stack = document.getElementById('stack').value;
