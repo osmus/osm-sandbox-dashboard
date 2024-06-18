@@ -89,7 +89,7 @@ jobs:
         run: aws eks --region us-east-1 update-kubeconfig --name osm-us-k8s-staging
       - name: Staging - helm deploy
         if: github.ref == 'refs/heads/staging'
-        run: helm upgrade --install stag --wait dashboard-charts/ -f values.staging.yaml -f dashboard-charts/values.yaml
+        run: helm upgrade --install staging --wait dashboard-charts/ -f values.staging.yaml -f dashboard-charts/values.yaml
       - name: Production - helm deploy
         if: github.ref == 'refs/heads/main'
-        run: helm upgrade --install prod --wait dashboard-charts/ -f values.production.yaml -f dashboard-charts/values.yaml
+        run: helm upgrade --install production --wait dashboard-charts/ -f values.production.yaml -f dashboard-charts/values.yaml
