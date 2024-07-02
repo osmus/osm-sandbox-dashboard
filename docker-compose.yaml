@@ -1,6 +1,6 @@
-version: '3.8'
 services:
   db:
+    platform: linux/amd64
     image: postgres:16
     env_file:
       - ./.env
@@ -14,9 +14,8 @@ services:
     build:
       context: images/dashboard/
       dockerfile: Dockerfile
-
-    # volumes:
-    #   - ./src:/app
+    volumes:
+      - ./images/dashboard/src:/app
     ports:
       - '8000:8000'
     # working_dir: /app
