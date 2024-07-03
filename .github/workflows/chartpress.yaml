@@ -3,8 +3,8 @@ on:
   push:
     branches:
       - 'main'
-      - 'staging'
-      - 'develop'
+      # - 'staging'
+      # - 'develop'
 jobs:
   build:
     runs-on: ubuntu-20.04

@@ -36,7 +36,7 @@ dashboard:
   ingressDomain: dashboard.osmsandbox.us
   env:
     ENVIRONMENT: production
-    ##### Dashboard
+    #################### Dashboard ####################
     OSM_CLIENT_ID: {{OSM_CLIENT_ID}}
     OSM_CLIENT_SECRET: {{OSM_CLIENT_SECRET}}
     REDIRECT_URI: "https://dashboard.osmsandbox.us/redirect_sandbox"
@@ -47,13 +47,13 @@ dashboard:
     OSM_SANDBOX_CHART: https://osmus.github.io/osm-sandbox-deploy/osm-sandbox-deploy-0.0.1-0.dev.git.17.hed91bc0.tgz
     SANDBOX_NAMESPACE: 'default'
 
-    ##### Sandbox Database env vars
+    #################### Sandbox Database env vars ####################
     SANDBOX_PG_DB_PORT: "5432"
     SANDBOX_PG_DB_USER: postgres
     SANDBOX_PG_DB_PASSWORD: {{SANDBOX_PG_DB_PASSWORD}}
     SANDBOX_PG_DB_NAME: {{SANDBOX_PG_DB_NAME}}
 
-    ##### Sandbox Api env vars
+    #################### Sandbox Api env vars ####################
     SANDBOX_DOMAIN: "boxes.osmsandbox.us"
     SANDBOX_MAILER_ADDRESS: "none"
     SANDBOX_MAILER_DOMAIN: osmsandbox.us
