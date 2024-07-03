@@ -1,3 +1,4 @@
+import logging
 import os
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Form
 from fastapi.staticfiles import StaticFiles
@@ -22,6 +23,8 @@ from utils.sandbox_database import save_user_sandbox_db
     osm_instance_url,
     osm_instance_scopes,
 ) = get_osm_credentials()
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 router = APIRouter()
 
@@ -102,5 +105,5 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
             raise HTTPException(status_code=404, detail="Check if instance exist")
 
     except Exception as e:
-        print(f"Error: {e}")
+        logging.error(f"Error: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=400)

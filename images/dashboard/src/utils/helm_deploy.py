@@ -1,8 +1,12 @@
+import logging
 from pyhelm3 import Client
 import asyncio
 import subprocess
 import re
 import os
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 client = Client()
 
 avoid_releases = ["prod", "production", "staging"]
@@ -27,7 +31,7 @@ async def list_releases(namespace):
 
     return release_list
 
-def replace_placeholders_and_save(template_values_files,values_files):
+def replace_placeholders_and_save(template_values_files, values_files):
     with open(template_values_files, 'r') as file:
         file_content = file.read()
     placeholders = re.findall(r'{{(.*?)}}', file_content)
@@ -35,24 +39,22 @@ def replace_placeholders_and_save(template_values_files,values_files):
         env_var = placeholder.strip()
         replacement_value = os.getenv(env_var, '')
         if not replacement_value:
-            print(f"Environment variable {env_var} is not set.")
+            logging.warning(f"Environment variable {env_var} is not set.")
         file_content = file_content.replace(f'{{{{{env_var}}}}}', replacement_value)
     with open(values_files, 'w') as file:
         file.write(file_content)
     return values_files
 
-
 async def create_upgrade(box_name, values_file):
-    print(box_name, values_file)
     command = [
         "helm", "upgrade", "--install", box_name, osm_sandbox_chart,
         "-f", values_file, "--namespace", namespace
     ]
-    print(" ".join(command))
+    logging.info(f"Running command: {' '.join(command)}")
     try:
         result = subprocess.run(command, check=True, capture_output=True, text=True)
-        print("Helm upgrade/install output:", result.stdout)
+        logging.info(result.stdout)
         return result.stdout
     except subprocess.CalledProcessError as e:
-        print("Error during Helm upgrade/install:", e.stderr)
+        logging.error(e.stderr)
         return e.stderr
