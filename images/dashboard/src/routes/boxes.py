@@ -1,51 +1,61 @@
 import os
 from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, validator, ValidationError
 from typing import Annotated, List
 from sqlalchemy.orm import Session
 import datetime
+import re
+
 from database import get_db
 from utils.helm_deploy import (
     list_releases,
     replace_placeholders_and_save,
     create_upgrade,
+    delete_release,
 )
 from utils.kubectl_deploy import list_pods, normalize_status
 from models import boxes as models
 
 router = APIRouter()
+namespace = "default"
 
 
 class BoxBase(BaseModel):
     name: str
-    status: str
-    start_date: datetime.date
-    end_date: datetime.date
+    resource_label: str
+    owner: str
+
+    @validator("name")
+    def validate_name(cls, value):
+        if not re.match("^[a-z-]+$", value):
+            raise ValueError("Name must contain only lowercase letters and hyphens")
+        return value
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
 
-@router.post("/boxes", response_model=BoxBase, tags=["Boxes"])
-async def create_box(box: BoxBase, db: db_dependency):
+@router.post("/boxes", tags=["Boxes"])
+async def create_box(box: BoxBase, db: Session = Depends(get_db)):
+    # Create values file
+    values_file = replace_placeholders_and_save(box.name, box.resource_label)
 
-    # create values files
-    os.environ["BOX_NAME"] = box.name
-    values_file = f"values/values_{box.name}.yaml"
-    replace_placeholders_and_save("values/osm-seed.template.yaml", values_file)
-    # create a new box
-
+    # Create a new box
     try:
-        output = await create_upgrade(box.name, values_file)
+        output, deploy_date, status = await create_upgrade(box.name, namespace, values_file)
         print(output)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    if status == "failure":
+        raise HTTPException(status_code=500, detail="Deployment failed: " + output)
+
     db_box = models.Boxes(
         name=box.name,
-        status=box.status,
-        start_date=box.start_date,
-        end_date=box.end_date,
+        resource_label=box.resource_label,
+        owner=box.owner,
+        status="deployed",
+        start_date=deploy_date,
     )
 
     db.add(db_box)
@@ -56,7 +66,6 @@ async def create_box(box: BoxBase, db: db_dependency):
 
 @router.get("/boxes", tags=["Boxes"])
 async def get_boxes(db: Session = Depends(get_db)):
-    namespace = "default"
     try:
         releases = await list_releases(namespace)
         pod_info = list_pods(namespace)
@@ -70,5 +79,15 @@ async def get_boxes(db: Session = Depends(get_db)):
             release["pods"] = pods
 
         return releases
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/boxes/{box_name}", tags=["Boxes"])
+async def delete_box(box_name: str, db: Session = Depends(get_db)):
+    try:
+        # Call the function to delete the release
+        result = await delete_release(box_name, namespace)
+        return {"detail": f"Release {box_name} deleted successfully", "result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -8,8 +8,8 @@ class Boxes(Base):
     __tablename__ = "boxes"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+    resource_label = Column(String)
+    owner = Column(String)
     status = Column(String)
     start_date = Column(Date)
     end_date = Column(Date)
-    owner = Column(String)
-    resource_tag = Column(String)
