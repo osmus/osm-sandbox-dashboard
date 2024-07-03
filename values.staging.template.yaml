@@ -51,7 +51,8 @@ dashboard:
     SANDBOX_PG_DB_USER: postgres
     SANDBOX_PG_DB_PASSWORD: {{SANDBOX_PG_DB_PASSWORD}}
     SANDBOX_PG_DB_NAME: {{SANDBOX_PG_DB_NAME}}
-    
+    SANDBOX_NAMESPACE: 'default'
+
     ##### Sandbox Api env vars
     SANDBOX_DOMAIN: "staging.boxes.osmsandbox.us"
     SANDBOX_MAILER_ADDRESS: "none"
