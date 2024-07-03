@@ -24,6 +24,7 @@ boxes.Base.metadata.create_all(bind=engine)
 sessions.Base.metadata.create_all(bind=engine)
 resources.Base.metadata.create_all(bind=engine)
 
+
 # Home route
 @app.get("/", tags=["Home"])
 def home(request: Request):
@@ -31,6 +32,7 @@ def home(request: Request):
         "status": "0k",
     }
     return JSONResponse(content=response)
+
 
 # Include routes
 app.include_router(login_route)

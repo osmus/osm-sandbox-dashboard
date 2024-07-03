@@ -7,9 +7,7 @@ from models.sessions import Sessions
 
 def model_to_dict(model):
     """Convert sqlalchemy model to dict"""
-    return {
-        column.name: getattr(model, column.name) for column in model.__table__.columns
-    }
+    return {column.name: getattr(model, column.name) for column in model.__table__.columns}
 
 
 def save_update_stack_session(db: Session, cookie_id: str, stack: str):

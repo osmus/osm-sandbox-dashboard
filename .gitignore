@@ -148,4 +148,4 @@ tests/.DS_Store
 values.dev.yaml
 values.yaml
 values/*.yaml
-!values/values.template.yaml
+images/dashboard/src/values/values_*.yaml

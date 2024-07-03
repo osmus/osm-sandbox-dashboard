@@ -12,5 +12,4 @@ class Boxes(Base):
     start_date = Column(Date)
     end_date = Column(Date)
     owner = Column(String)
-    resource_tag  = Column(String)
-    
+    resource_tag = Column(String)
