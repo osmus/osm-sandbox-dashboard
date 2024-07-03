@@ -7,7 +7,7 @@ import datetime
 from database import get_db
 from utils.helm_deploy import list_releases, replace_placeholders_and_save, create_upgrade
 from utils.kubectl_deploy import list_pods, normalize_status
-from models import boxes_models as models
+from models import boxes as models
 
 router = APIRouter()
 
