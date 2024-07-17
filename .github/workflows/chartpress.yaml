@@ -4,7 +4,7 @@ on:
     branches:
       - 'main'
       - 'staging'
-      - 'develop'
+      # - 'develop'
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -82,14 +82,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
       - name: Setup Kubectl and Helm Dependencies
-        if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         run: "sudo pip install awscli --ignore-installed six\nsudo curl -L -o /usr/bin/kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.7/2020-07-08/bin/linux/amd64/kubectl\nsudo chmod +x /usr/bin/kubectl\nsudo curl -o /usr/bin/aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.7/2020-07-08/bin/linux/amd64/aws-iam-authenticator\nsudo chmod +x /usr/bin/aws-iam-authenticator\nwget https://get.helm.sh/helm-v3.5.0-linux-amd64.tar.gz -O helm.tar.gz\ntar -xvzf helm.tar.gz\nsudo mv linux-amd64/helm /usr/local/bin/ \nsudo chmod +x /usr/local/bin/helm\n #magic___^_^___line\n"
       - name: Update kube-config staging
-        if: github.ref == 'refs/heads/staging' || github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         run: aws eks --region us-east-1 update-kubeconfig --name osm-us-k8s-staging
-      - name: Staging - helm deploy
-        if: github.ref == 'refs/heads/staging'
-        run: helm upgrade --install staging --wait dashboard-charts/ -f values.staging.yaml -f dashboard-charts/values.yaml
+      # - name: Staging - helm deploy
+      #   if: github.ref == 'refs/heads/staging'
+      #   run: helm upgrade --install staging --wait dashboard-charts/ -f values.staging.yaml -f dashboard-charts/values.yaml
       - name: Production - helm deploy
         if: github.ref == 'refs/heads/main'
         run: helm upgrade --install production --wait dashboard-charts/ -f values.production.yaml -f dashboard-charts/values.yaml
