@@ -19,7 +19,7 @@ def list_pods(namespace):
         pod_info = {
             "namespace": i.metadata.namespace,
             "pod": i.metadata.name,
-            "status": i.status.phase,
+            "state": i.status.phase,
             "release": i.metadata.labels.get("release", "-"),
             "created": creation_timestamp_str,
             "run": i.metadata.labels.get("run", "-"),
@@ -33,8 +33,8 @@ def list_pods(namespace):
     return grouped_pods
 
 
-def normalize_status(status_list: List[str]) -> str:
-    unique_statuses = set(status_list)
+def normalize_status(state_list: List[str]) -> str:
+    unique_statuses = set(state_list)
     if len(unique_statuses) == 1 and "Running" in unique_statuses:
         return "Running"
     return "Pending"

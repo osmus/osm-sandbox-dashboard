@@ -4,7 +4,9 @@ import asyncio
 import subprocess
 import re
 import os
-from datetime import datetime
+from typing import Optional
+from sqlalchemy.orm import Session
+import time
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -49,7 +51,7 @@ def replace_placeholders_and_save(box_name, label_value):
     return values_file
 
 
-async def create_upgrade(box_name, namespace, values_file):
+async def create_upgrade_box(box_name, namespace, values_file):
     command = [
         "helm",
         "upgrade",
@@ -62,17 +64,17 @@ async def create_upgrade(box_name, namespace, values_file):
         namespace,
     ]
     logging.info(f"Running command: {' '.join(command)}")
-    deploy_date = datetime.now().isoformat()
+    deploy_date = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
 
     try:
         result = subprocess.run(command, check=True, capture_output=True, text=True)
         logging.info(result.stdout)
-        status = "success"
-        return result.stdout, deploy_date, status
+        state = "pending"
+        return result.stdout, deploy_date, state
     except subprocess.CalledProcessError as e:
         logging.error(e.stderr)
-        status = "failure"
-        return e.stderr, deploy_date, status
+        state = "failure"
+        return e.stderr, deploy_date, state
 
 
 async def delete_release(box_name, namespace):
