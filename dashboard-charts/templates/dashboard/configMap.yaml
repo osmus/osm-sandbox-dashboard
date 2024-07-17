@@ -37,7 +37,10 @@ data:
     SANDBOX_OAUTH_CLIENT_ID: {{ .Values.dashboard.env.SANDBOX_OAUTH_CLIENT_ID | quote }}
     SANDBOX_OAUTH_KEY: {{ .Values.dashboard.env.SANDBOX_OAUTH_KEY | quote }}
     SANDBOX_MAILER_FROM: {{ .Values.dashboard.env.SANDBOX_MAILER_FROM | quote }}
+    SANDBOX_NOMINATIM_URL: {{ .Values.dashboard.env.SANDBOX_NOMINATIM_URL | quote }}
+    SANDBOX_OVERPASS_URL: {{ .Values.dashboard.env.SANDBOX_OVERPASS_URL | quote }}
     SANDBOX_ORGANIZATION_NAME: {{ .Values.dashboard.env.SANDBOX_ORGANIZATION_NAME | quote }}
     SANDBOX_WEBSITE_STATUS: {{ .Values.dashboard.env.SANDBOX_WEBSITE_STATUS | quote }}
     SANDBOX_BACKUP_FILE_URL: {{ .Values.dashboard.env.SANDBOX_BACKUP_FILE_URL | quote }}
+
 {{- end }}

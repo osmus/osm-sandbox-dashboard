@@ -1,0 +1,71 @@
+osm-seed:
+  environment: dev
+  cloudProvider: aws
+  AWS_S3_BUCKET: s3://osmsandbox
+  AWS_SSL_ARN: 'none'
+  serviceType: ClusterIP
+  createClusterIssuer: false
+  domain: {{BOX_NAME}}.boxes.osmsandbox.us
+  adminEmail: osm-sandbox-admins@googlegroups.com
+  db:
+    enabled: true
+    nodeSelector:
+      enabled: true
+      label_key: nodegroup_type
+      label_value: {{LABEL_VALUE}}
+    env:
+      POSTGRES_DB: {{SANDBOX_PG_DB_NAME}}
+      POSTGRES_USER: {{SANDBOX_PG_DB_USER}}
+      POSTGRES_PASSWORD: {{SANDBOX_PG_DB_PASSWORD}}
+      LOG_STATEMENT: "mod"
+    persistenceDisk:
+      enabled: false
+    resources:
+      enabled: false
+    sharedMemorySize: 256Mi
+    livenessProbeExec: false
+  # ====================================================================================================
+  # Variables for osm-seed website
+  # ====================================================================================================
+  web:
+    enabled: true
+    nodeSelector:
+      enabled: true
+      label_key: nodegroup_type
+      label_value: {{LABEL_VALUE}}
+    replicaCount: 1
+    serviceAnnotations:
+      service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "300"
+    ingressDomain: www.{{BOX_NAME}}.boxes.osmsandbox.us
+    env:
+      MAILER_ADDRESS: 'none'
+      MAILER_DOMAIN: osmsandbox.us
+      MAILER_USERNAME: 'none'
+      MAILER_PASSWORD: 'none'
+      OSM_id_key: {{SANDBOX_OSM_id_key}}
+      OAUTH_CLIENT_ID: {{SANDBOX_OAUTH_CLIENT_ID}}
+      OAUTH_KEY: {{SANDBOX_OAUTH_KEY}}
+      MAILER_FROM: {{SANDBOX_MAILER_FROM}}
+      NOMINATIM_URL: {{SANDBOX_NOMINATIM_URL}}
+      OVERPASS_URL: {{SANDBOX_OVERPASS_URL}}
+      NEW_RELIC_LICENSE_KEY: 'none'
+      NEW_RELIC_APP_NAME: 'none'
+      ORGANIZATION_NAME: {{SANDBOX_ORGANIZATION_NAME}}
+      WEBSITE_STATUS: "online"
+      BACKUP_FILE_URL: {{SANDBOX_BACKUP_FILE_URL}}
+    resources:
+      enabled: false
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 10
+      cpuUtilization: 80
+    sharedMemorySize: 16Mi
+  memcached:
+    enabled: true
+    nodeSelector:
+      enabled: true
+      label_key: nodegroup_type
+      label_value: {{LABEL_VALUE}}
+    resources:
+      enabled: false

@@ -6,20 +6,23 @@ from fastapi.responses import JSONResponse
 from database import engine
 
 # Import models
-from models import stacks_models
-from models import sessions_models
+from models import boxes
+from models import sessions
+from models import resources
 
 # Import routes
-from routes.stacks_route import router as stacks_route
-from routes.login_route import router as login_route
+from routes.boxes import router as stacks_route
+from routes.login import router as login_route
+from routes.resources import router as resources_route
 
 app = FastAPI()
 app.title = "OSM-Sandbox API User"
 app.version = "0.1.0"
 
 # Create tables
-stacks_models.Base.metadata.create_all(bind=engine)
-sessions_models.Base.metadata.create_all(bind=engine)
+boxes.Base.metadata.create_all(bind=engine)
+sessions.Base.metadata.create_all(bind=engine)
+resources.Base.metadata.create_all(bind=engine)
 
 
 # Home route
@@ -34,3 +37,4 @@ def home(request: Request):
 # Include routes
 app.include_router(login_route)
 app.include_router(stacks_route)
+app.include_router(resources_route)

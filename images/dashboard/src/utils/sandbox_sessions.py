@@ -1,15 +1,13 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from models import sessions_models
+from models import sessions
 from sqlalchemy.exc import IntegrityError
-from models.sessions_models import Sessions
+from models.sessions import Sessions
 
 
 def model_to_dict(model):
     """Convert sqlalchemy model to dict"""
-    return {
-        column.name: getattr(model, column.name) for column in model.__table__.columns
-    }
+    return {column.name: getattr(model, column.name) for column in model.__table__.columns}
 
 
 def save_update_stack_session(db: Session, cookie_id: str, stack: str):
@@ -21,11 +19,11 @@ def save_update_stack_session(db: Session, cookie_id: str, stack: str):
         stack (str): stack name
     """
     try:
-        db_session = db.query(sessions_models.Sessions).filter_by(id=cookie_id).first()
+        db_session = db.query(sessions.Sessions).filter_by(id=cookie_id).first()
         if db_session:
             db_session.stack = stack
         else:
-            db_session = sessions_models.Sessions(id=cookie_id, stack=stack)
+            db_session = sessions.Sessions(id=cookie_id, stack=stack)
             db.add(db_session)
         db.commit()
         db.refresh(db_session)
