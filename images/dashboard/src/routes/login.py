@@ -1,3 +1,4 @@
+import logging
 import os
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Form
 from fastapi.staticfiles import StaticFiles
@@ -23,13 +24,14 @@ from utils.sandbox_database import save_user_sandbox_db
     osm_instance_scopes,
 ) = get_osm_credentials()
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 router = APIRouter()
 
 domain = os.getenv("SANDBOX_DOMAIN")
 
-oauth = OAuth2Session(
-    client_id=client_id, redirect_uri=redirect_uri, scope=osm_instance_scopes
-)
+oauth = OAuth2Session(client_id=client_id, redirect_uri=redirect_uri, scope=osm_instance_scopes)
+
 
 # Custom static files to set cache control
 class CustomStaticFiles(StaticFiles):
@@ -51,19 +53,20 @@ def test_page(request: Request, stack: str = Query(None), db: Session = Depends(
     """Page for login test"""
     return templates.TemplateResponse("index.html", {"request": request})
 
+
 @router.get("/osm_authorization", tags=["OSM Sandbox"])
 def osm_authorization(request: Request, stack: str = Query(...), db: Session = Depends(get_db)):
     """Enable OSM authorization"""
-    
+
     cookie_id = request.cookies.get("cookie_id")
-    
+
     if cookie_id is None:
         # Generate a new cookie_id
         cookie_id = str(uuid.uuid4())
         response = RedirectResponse(url=request.url)
         response.set_cookie(key="cookie_id", value=cookie_id)
         return response
-    
+
     if cookie_id and stack:
         save_update_stack_session(db, cookie_id, stack)
         auth_url = f"{osm_instance_url}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={osm_instance_scopes}"
@@ -82,9 +85,7 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
             f"{osm_instance_url}/oauth2/token", code=code, client_secret=client_secret
         )
         oauth.token = token
-        user_details_response = oauth.get(
-            f"{osm_instance_url}/api/0.6/user/details.json"
-        )
+        user_details_response = oauth.get(f"{osm_instance_url}/api/0.6/user/details.json")
         user_details = user_details_response.json()
         display_name = user_details.get("user").get("display_name")
         # languages = user_details.get("user").get("languages")
@@ -102,5 +103,5 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
             raise HTTPException(status_code=404, detail="Check if instance exist")
 
     except Exception as e:
-        print(f"Error: {e}")
+        logging.error(f"Error: {e}")
         return JSONResponse(content={"error": str(e)}, status_code=400)

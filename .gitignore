@@ -146,3 +146,6 @@ data/
 tests/.DS_Store
 .env
 values.dev.yaml
+values.yaml
+values/*.yaml
+images/dashboard/src/values/values_*.yaml

@@ -1,6 +1,6 @@
-version: '3.8'
 services:
   db:
+    platform: linux/amd64
     image: postgres:16
     env_file:
       - ./.env
@@ -8,15 +8,14 @@ services:
       - '5432:5432'
   dashboard:
     platform: linux/amd64
-    image: rub21/osm-sandbox-dashboard:v7
+    image: rub21/osm-sandbox-dashboard:v11
     env_file:
       - ./.env
     build:
       context: images/dashboard/
       dockerfile: Dockerfile
-
-    # volumes:
-    #   - ./src:/app
+    volumes:
+      - ./images/dashboard/src:/app
     ports:
       - '8000:8000'
     # working_dir: /app
