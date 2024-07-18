@@ -9,7 +9,9 @@ from utils.kubectl_deploy import normalize_status
 def update_box_state_and_age(
     db: Session, box_name: str, releases: list, pod_info: dict
 ) -> Optional[BoxResponse]:
-    db_box = db.query(Boxes).filter(Boxes.name == box_name).first()
+
+    db_box = db.query(Boxes).filter(Boxes.name == box_name).order_by(Boxes.id.desc()).first()
+
     if not db_box:
         return None
 
@@ -33,7 +35,11 @@ def update_box_state_and_age(
     # Calculate age based on current datetime and start datetime
     current_datetime = datetime.utcnow()
     age_timedelta = current_datetime - db_box.start_date
-    age_in_hours = age_timedelta.total_seconds() // 3600  # Age in hours
+    age_in_hours = round(age_timedelta.total_seconds() / 3600, 2)
+
+    db_box.age = age_in_hours
+    db.commit()
+    db.refresh(db_box)
 
     box_response = BoxResponse.from_orm(db_box)
     box_response.age = age_in_hours
