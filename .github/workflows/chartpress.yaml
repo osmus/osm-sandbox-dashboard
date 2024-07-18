@@ -90,6 +90,6 @@ jobs:
       # - name: Staging - helm deploy
       #   if: github.ref == 'refs/heads/staging'
       #   run: helm upgrade --install staging --wait dashboard-charts/ -f values.staging.yaml -f dashboard-charts/values.yaml
-      - name: Production - helm deploy
-        if: github.ref == 'refs/heads/main'
-        run: helm upgrade --install production --wait dashboard-charts/ -f values.production.yaml -f dashboard-charts/values.yaml
+      # - name: Production - helm deploy
+      #   if: github.ref == 'refs/heads/main'
+      #   run: helm upgrade --install dev --wait dashboard-charts/ -f values.production.yaml -f dashboard-charts/values.yaml
