@@ -1,6 +1,5 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from models import sessions
 from sqlalchemy.exc import IntegrityError
 from models.sessions import Sessions
 
@@ -10,20 +9,20 @@ def model_to_dict(model):
     return {column.name: getattr(model, column.name) for column in model.__table__.columns}
 
 
-def save_update_stack_session(db: Session, cookie_id: str, stack: str):
-    """Save or update session and stack name
+def save_update_box_session(db: Session, cookie_id: str, box: str):
+    """Save or update session and box name
 
     Args:
         db (Session): database session
         cookie_id (str): cookie unique identifier
-        stack (str): stack name
+        box (str): box name
     """
     try:
-        db_session = db.query(sessions.Sessions).filter_by(id=cookie_id).first()
+        db_session = db.query(Sessions).filter_by(id=cookie_id).first()
         if db_session:
-            db_session.stack = stack
+            db_session.box = box
         else:
-            db_session = sessions.Sessions(id=cookie_id, stack=stack)
+            db_session = Sessions(id=cookie_id, box=box)
             db.add(db_session)
         db.commit()
         db.refresh(db_session)
@@ -40,6 +39,7 @@ def update_user_session(db: Session, cookie_id: str, user: str):
     Args:
         db (Session): database session
         cookie_id (str): cookie unique identifier
+        user (str): user name
     """
     db_session = db.query(Sessions).filter(Sessions.id == cookie_id).first()
     if db_session:

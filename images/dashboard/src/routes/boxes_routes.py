@@ -8,16 +8,17 @@ from datetime import datetime
 import logging
 
 from database import get_db
-from utils.helm_deploy import (
+from utils.helm import (
     list_releases,
     replace_placeholders_and_save,
     create_upgrade_box,
     delete_release,
 )
-from utils.kubectl_deploy import list_pods, normalize_status
+from utils.kubectl import list_pods, normalize_status
 from models.boxes import Boxes, StateEnum
 from schemas.boxes import BoxBase, BoxResponse
 from utils.box_helpers import update_box_state_and_age
+
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 router = APIRouter()
@@ -136,7 +137,6 @@ async def delete_box(box_name: str, db: Session = Depends(get_db)):
     try:
         logging.info(f"Attempting to delete box with name: {box_name}.")
 
-        # Fetch the box from the database
         db_box = db.query(Boxes).filter(Boxes.name == box_name).first()
         if not db_box:
             logging.warning(f"Box with name {box_name} not found.")
@@ -148,11 +148,9 @@ async def delete_box(box_name: str, db: Session = Depends(get_db)):
         db_box.state = StateEnum.terminated
 
         age_timedelta = end_datetime - db_box.start_date
-        age_in_hours = round(
-            age_timedelta.total_seconds() / 3600, 2
-        )  # Age in hours as float, rounded to two decimal places
+        age_in_hours = round(age_timedelta.total_seconds() / 3600, 2)
 
-        db_box.age = age_in_hours  # Update the age in the database
+        db_box.age = age_in_hours
         result = await delete_release(box_name, namespace)
 
         db.commit()
@@ -185,14 +183,8 @@ async def get_boxes_history(
 ):
     try:
         logging.info("Fetching boxes history from the database with pagination.")
-
-        # Calculate the offset for pagination
         offset = (page - 1) * page_size
-
-        # Fetch paginated boxes from the database, ordered by ID in descending order
         boxes = db.query(Boxes).order_by(Boxes.id.desc()).offset(offset).limit(page_size).all()
-
-        # Map database models to response models
         box_responses = [
             BoxResponse(
                 id=box.id,
