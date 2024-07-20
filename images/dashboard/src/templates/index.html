@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Sandbox</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
 <body>
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -33,7 +35,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        let sessionId = null;
+
+        document.addEventListener('DOMContentLoaded', function () {
             fetch('/boxes')
                 .then(response => response.json())
                 .then(data => {
@@ -48,13 +52,35 @@
                 .catch(error => console.error('Error fetching boxes:', error));
         });
 
-        document.getElementById('loginForm').addEventListener('submit', function(event) {
+        document.getElementById('box').addEventListener('change', function (event) {
+            const box = event.target.value;
+            if (box) {
+                fetch(`/initialize_session?box=${encodeURIComponent(box)}`, {
+                    method: 'GET',
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        if (data.id) {
+                            sessionId = data.id;
+                            console.log('Session ID stored:', sessionId);
+                        } else {
+                            console.error('Failed to initialize session');
+                        }
+                    })
+                    .catch(error => console.error('Error initializing session:', error));
+            }
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
             event.preventDefault();
-            const box = document.getElementById('box').value;
-            localStorage.setItem('box', box);
-            const queryString = new URLSearchParams({ box }).toString();
-            const url = `/osm_authorization?${queryString}`;
-            window.location.href = url;
+            if (sessionId) {
+                const queryString = new URLSearchParams({ "session_id": sessionId }).toString();
+                const url = `/osm_authorization?${queryString}`;
+                window.location.href = url;
+            } else {
+                alert('Please select a box and ensure session is initialized');
+            }
         });
     </script>
 </body>

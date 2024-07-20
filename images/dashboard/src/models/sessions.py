@@ -1,5 +1,6 @@
-from sqlalchemy import Column, String
+from sqlalchemy import Column, String, DateTime
 from database import Base
+from datetime import datetime
 
 
 class Sessions(Base):
@@ -7,3 +8,4 @@ class Sessions(Base):
     id = Column(String, primary_key=True, index=True)
     box = Column(String)
     user = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)

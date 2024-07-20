@@ -8,7 +8,7 @@ services:
       - '5432:5432'
   dashboard:
     platform: linux/amd64
-    image: rub21/osm-sandbox-dashboard:v12
+    image: rub21/osm-sandbox-dashboard:v13
     env_file:
       - ./.env
     build:
