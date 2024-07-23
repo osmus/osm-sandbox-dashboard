@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from models.boxes import Boxes, StateEnum
 from schemas.boxes import BoxResponse
-from utils.kubectl_deploy import normalize_status
+from utils.kubectl import normalize_status
 
 
 def update_box_state_and_age(
