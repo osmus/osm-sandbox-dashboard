@@ -17,10 +17,10 @@ argon2Hasher = PasswordHasher(
 
 
 def check_database_instance(db_host: str) -> str:
-    """Check if box's database is running
+    """Check if stacks' database is running
 
     Args:
-        db_host (str): box database host
+        db_host (str): stacks database host
 
     Returns:
         str: return status
@@ -44,12 +44,13 @@ def check_database_instance(db_host: str) -> str:
         return f"error: {e}"
 
 
-def save_user_sandbox_db(box_name: str, user_name: str) -> str:
+def save_user_sandbox_db(stack_name, user_name) -> str:
     """Save a new user in the sandbox database
 
     Args:
-        box_name (str): box name
+        stack_name (str): stack name
         user_name (str): user name
+        user_image (str): user url image that comes from OSM
     """
     # Hash the password
     pass_crypt = argon2Hasher.hash(user_name)
@@ -58,7 +59,7 @@ def save_user_sandbox_db(box_name: str, user_name: str) -> str:
         dbname=db_name,
         user=db_user,
         password=db_password,
-        host=f"{box_name}-db",
+        host=f"{stack_name}-db",
         port=db_port,
     )
     cur = conn.cursor()
@@ -73,7 +74,7 @@ def save_user_sandbox_db(box_name: str, user_name: str) -> str:
     ON CONFLICT (email) DO NOTHING;
     """
     values = (
-        f"{user_name}@{box_name}.{domain}",
+        f"{user_name}@{stack_name}.{domain}",
         user_name,
         pass_crypt,
         True,

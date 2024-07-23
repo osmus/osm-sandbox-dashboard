@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Sandbox</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
-
 <body>
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -19,9 +17,9 @@
                     <div class="card-body">
                         <form id="loginForm">
                             <div class="form-group">
-                                <label for="box">box:</label>
-                                <select class="form-control" id="box" name="box" required>
-                                    <option value="">Select a box</option>
+                                <label for="stack">Stack:</label>
+                                <select class="form-control" id="stack" name="stack" required>
+                                    <option value="">Select a stack</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary btn-block">Login with OpenStreetMap</button>
@@ -35,52 +33,28 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        let sessionId = null;
-
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             fetch('/boxes')
                 .then(response => response.json())
                 .then(data => {
-                    const boxSelect = document.getElementById('box');
+                    const stackSelect = document.getElementById('stack');
                     data.forEach(box => {
                         const option = document.createElement('option');
                         option.value = box.name;
                         option.textContent = box.name;
-                        boxSelect.appendChild(option);
+                        stackSelect.appendChild(option);
                     });
                 })
                 .catch(error => console.error('Error fetching boxes:', error));
         });
 
-        document.getElementById('box').addEventListener('change', function (event) {
-            const box = event.target.value;
-            if (box) {
-                fetch(`/initialize_session?box=${encodeURIComponent(box)}`, {
-                    method: 'GET',
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data)
-                        if (data.id) {
-                            sessionId = data.id;
-                            console.log('Session ID stored:', sessionId);
-                        } else {
-                            console.error('Failed to initialize session');
-                        }
-                    })
-                    .catch(error => console.error('Error initializing session:', error));
-            }
-        });
-
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            if (sessionId) {
-                const queryString = new URLSearchParams({ "session_id": sessionId }).toString();
-                const url = `/osm_authorization?${queryString}`;
-                window.location.href = url;
-            } else {
-                alert('Please select a box and ensure session is initialized');
-            }
+            const stack = document.getElementById('stack').value;
+            localStorage.setItem('stack', stack);
+            const queryString = new URLSearchParams({ stack }).toString();
+            const url = `/osm_authorization?${queryString}`;
+            window.location.href = url;
         });
     </script>
 </body>

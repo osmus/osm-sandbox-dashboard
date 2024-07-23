@@ -4,7 +4,7 @@ from typing import List, Annotated
 from sqlalchemy.orm import Session
 from database import get_db
 from models.resources import Resources
-from utils.kubectl import list_nodes
+from utils.kubectl_resources import list_nodes
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -34,3 +34,14 @@ async def get_resources(db: db_dependency):
         return resource_list
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Additional code to set up the FastAPI app if needed
+if __name__ == "__main__":
+    import uvicorn
+    from fastapi import FastAPI
+
+    app = FastAPI()
+    app.include_router(router)
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)

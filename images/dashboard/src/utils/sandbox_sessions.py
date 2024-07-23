@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from models import sessions
 from sqlalchemy.exc import IntegrityError
 from models.sessions import Sessions
 
@@ -9,20 +10,20 @@ def model_to_dict(model):
     return {column.name: getattr(model, column.name) for column in model.__table__.columns}
 
 
-def save_update_box_session(db: Session, cookie_id: str, box: str):
-    """Save or update session and box name
+def save_update_stack_session(db: Session, cookie_id: str, stack: str):
+    """Save or update session and stack name
 
     Args:
         db (Session): database session
         cookie_id (str): cookie unique identifier
-        box (str): box name
+        stack (str): stack name
     """
     try:
-        db_session = db.query(Sessions).filter_by(id=cookie_id).first()
+        db_session = db.query(sessions.Sessions).filter_by(id=cookie_id).first()
         if db_session:
-            db_session.box = box
+            db_session.stack = stack
         else:
-            db_session = Sessions(id=cookie_id, box=box)
+            db_session = sessions.Sessions(id=cookie_id, stack=stack)
             db.add(db_session)
         db.commit()
         db.refresh(db_session)
@@ -33,40 +34,18 @@ def save_update_box_session(db: Session, cookie_id: str, box: str):
         raise HTTPException(status_code=500, detail="Failed to save or update session.")
 
 
-# def update_user_session(db: Session, cookie_id: str, user: str):
-#     """Update session user
-
-#     Args:
-#         db (Session): database session
-#         cookie_id (str): cookie unique identifier
-#         user (str): user name
-#     """
-#     db_session = db.query(Sessions).filter(Sessions.id == cookie_id).first()
-#     if db_session:
-#         db_session.user = user
-#         db.commit()
-#         db.refresh(db_session)
-#         return model_to_dict(db_session)
-#     else:
-#         raise ValueError(f"Session with id {cookie_id} does not exist")
-
-
-def update_user_session(db: Session, session_id: str, user: str) -> Sessions:
+def update_user_session(db: Session, cookie_id: str, user: str):
     """Update session user
 
     Args:
         db (Session): database session
-        session_id (str): session unique identifier
-        user (str): user name
-
-    Returns:
-        Sessions: The updated session object
+        cookie_id (str): cookie unique identifier
     """
-    db_session = db.query(Sessions).filter(Sessions.id == session_id).first()
+    db_session = db.query(Sessions).filter(Sessions.id == cookie_id).first()
     if db_session:
         db_session.user = user
         db.commit()
         db.refresh(db_session)
-        return db_session
+        return model_to_dict(db_session)
     else:
-        raise ValueError(f"Session with id {session_id} does not exist")
+        raise ValueError(f"Session with id {cookie_id} does not exist")
