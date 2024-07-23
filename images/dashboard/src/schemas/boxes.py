@@ -41,7 +41,7 @@ class BoxResponse(BoxBase):
     state: str
     start_date: datetime.datetime
     end_date: Optional[datetime.datetime] = None
-    age: Optional[int] = None
+    age: Optional[float] = None
 
     class Config:
         orm_mode = True

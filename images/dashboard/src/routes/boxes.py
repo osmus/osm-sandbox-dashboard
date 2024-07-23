@@ -1,6 +1,6 @@
 import os
 import re
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from pydantic import BaseModel, validator, Field
 from typing import List, Optional
 from sqlalchemy.orm import Session
@@ -25,7 +25,12 @@ namespace = "default"
 sandbox_domain = os.getenv("SANDBOX_DOMAIN")
 
 
-@router.post("/boxes", tags=["Boxes"], response_model=BoxResponse)
+@router.post(
+    "/boxes",
+    tags=["Boxes"],
+    response_model=BoxResponse,
+    description="Create a box in the database and release a sack in the Kubernetes cluster.",
+)
 async def create_box(box: BoxBase, db: Session = Depends(get_db)):
     logging.info("Attempting to create a new box.")
 
@@ -73,7 +78,12 @@ async def create_box(box: BoxBase, db: Session = Depends(get_db)):
     return BoxResponse.from_orm(db_box)
 
 
-@router.get("/boxes", tags=["Boxes"], response_model=List[BoxResponse])
+@router.get(
+    "/boxes",
+    tags=["Boxes"],
+    response_model=List[BoxResponse],
+    description="List all currently active boxes.",
+)
 async def get_boxes(db: Session = Depends(get_db)):
     try:
         logging.info("Fetching all boxes.")
@@ -93,7 +103,12 @@ async def get_boxes(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/boxes/{box_name}", tags=["Boxes"], response_model=BoxResponse)
+@router.get(
+    "/boxes/{box_name}",
+    tags=["Boxes"],
+    response_model=BoxResponse,
+    description="List an active box by name.",
+)
 async def get_box(box_name: str, db: Session = Depends(get_db)):
     try:
         logging.info(f"Fetching box with name: {box_name}.")
@@ -112,7 +127,11 @@ async def get_box(box_name: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.delete("/boxes/{box_name}", tags=["Boxes"])
+@router.delete(
+    "/boxes/{box_name}",
+    tags=["Boxes"],
+    description="Delete an active box and update its end date and age in the database.",
+)
 async def delete_box(box_name: str, db: Session = Depends(get_db)):
     try:
         logging.info(f"Attempting to delete box with name: {box_name}.")
@@ -129,9 +148,11 @@ async def delete_box(box_name: str, db: Session = Depends(get_db)):
         db_box.state = StateEnum.terminated
 
         age_timedelta = end_datetime - db_box.start_date
-        age_in_hours = age_timedelta.total_seconds() // 3600  # Age in hours
+        age_in_hours = round(
+            age_timedelta.total_seconds() / 3600, 2
+        )  # Age in hours as float, rounded to two decimal places
 
-        # Call the function to delete the release
+        db_box.age = age_in_hours  # Update the age in the database
         result = await delete_release(box_name, namespace)
 
         db.commit()
@@ -148,4 +169,47 @@ async def delete_box(box_name: str, db: Session = Depends(get_db)):
         }
     except Exception as e:
         logging.error(f"Error deleting box {box_name}: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get(
+    "/boxes_history",
+    tags=["Boxes"],
+    response_model=List[BoxResponse],
+    description="Fetch a paginated history of boxes from the database.",
+)
+async def get_boxes_history(
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+):
+    try:
+        logging.info("Fetching boxes history from the database with pagination.")
+
+        # Calculate the offset for pagination
+        offset = (page - 1) * page_size
+
+        # Fetch paginated boxes from the database, ordered by ID in descending order
+        boxes = db.query(Boxes).order_by(Boxes.id.desc()).offset(offset).limit(page_size).all()
+
+        # Map database models to response models
+        box_responses = [
+            BoxResponse(
+                id=box.id,
+                name=box.name,
+                state=box.state,
+                age=box.age,
+                resource_label=box.resource_label,
+                owner=box.owner,
+                subdomain=box.subdomain,
+                start_date=box.start_date.isoformat() if box.start_date else None,
+                end_date=box.end_date.isoformat() if box.end_date else None,
+            )
+            for box in boxes
+        ]
+
+        logging.info("Fetched boxes history successfully.")
+        return box_responses
+    except Exception as e:
+        logging.error(f"Error fetching boxes history: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

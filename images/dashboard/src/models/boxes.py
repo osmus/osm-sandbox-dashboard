@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, DateTime, Enum as SQLEnum, Float
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from enum import Enum
@@ -23,3 +23,4 @@ class Boxes(Base):
     state = Column(SQLEnum(StateEnum), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=True)
+    age = Column(Float, nullable=True)
