@@ -1,6 +1,6 @@
-environment: dashboard
+environment: production
 serviceType: ClusterIP
-createClusterIssuer: true
+# createClusterIssuer: true
 adminEmail: admin@osmsandbox.us
 db:
   enabled: true
@@ -16,12 +16,12 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: {{POSTGRES_PASSWORD}}
   persistenceDisk:
-    enabled: false
+    enabled: true
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
-    AWS_ElasticBlockStore_volumeID: vol-09964172ef71bc8e8
-    AWS_ElasticBlockStore_size: 50Gi
+    AWS_ElasticBlockStore_volumeID: vol-0ff28c0250041ba34
+    AWS_ElasticBlockStore_size: 10Gi
   resources:
     enabled: false
     requests:
