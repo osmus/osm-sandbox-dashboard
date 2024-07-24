@@ -7,8 +7,7 @@ import os
 from typing import Optional
 from sqlalchemy.orm import Session
 import time
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+import utils.logging_config
 
 client = Client()
 
@@ -17,6 +16,7 @@ osm_sandbox_chart = os.environ.get("OSM_SANDBOX_CHART")
 
 
 async def list_releases(namespace):
+    """List box releases"""
     releases = await client.list_releases(all=False, all_namespaces=False, namespace=namespace)
     release_list = []
     for release in releases:
@@ -26,7 +26,6 @@ async def list_releases(namespace):
                 "name": release.name,
                 "namespace": release.namespace,
                 "revision": revision.revision,
-                # "status": str(revision.status).replace("ReleaseRevisionStatus.", ""),
             }
             release_list.append(release_info)
 
@@ -34,6 +33,7 @@ async def list_releases(namespace):
 
 
 def replace_placeholders_and_save(box_name, label_value):
+    """Take a template YAML file and update it with the necessary values to deploy a box."""
     os.environ["BOX_NAME"] = box_name
     os.environ["LABEL_VALUE"] = label_value
     values_file = f"values/values_{box_name}.yaml"
@@ -52,6 +52,7 @@ def replace_placeholders_and_save(box_name, label_value):
 
 
 async def create_upgrade_box(box_name, namespace, values_file):
+    """Creata or upgrade box"""
     command = [
         "helm",
         "upgrade",
@@ -78,6 +79,7 @@ async def create_upgrade_box(box_name, namespace, values_file):
 
 
 async def delete_release(box_name, namespace):
+    """Delete box release"""
     command = [
         "helm",
         "delete",

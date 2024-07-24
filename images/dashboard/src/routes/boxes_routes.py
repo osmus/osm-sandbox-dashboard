@@ -11,7 +11,6 @@ import asyncio
 
 from database import get_db
 from utils.helm import (
-    list_releases,
     replace_placeholders_and_save,
     create_upgrade_box,
     delete_release,
