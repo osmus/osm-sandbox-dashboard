@@ -16,7 +16,7 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: {{POSTGRES_PASSWORD}}
   persistenceDisk:
-    enabled: true
+    enabled: false
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
