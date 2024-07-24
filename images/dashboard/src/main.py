@@ -2,22 +2,17 @@ import uuid
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
-# Import database utils
 from database import engine
 
-# Import models
 from models import boxes
 from models import sessions
 from models import resources
-
-# Import routes
 from routes.boxes_routes import router as boxes_routes
 from routes.login_routes import router as login_routes
 from routes.resources_routes import router as resources_routes
 
 app = FastAPI()
-app.title = "OSM-Sandbox API User"
+app.title = "OSM-Sandbox API"
 app.version = "0.1.0"
 
 # Set up CORS
