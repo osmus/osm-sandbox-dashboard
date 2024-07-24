@@ -19,7 +19,7 @@
                     <div class="card-body">
                         <form id="loginForm">
                             <div class="form-group">
-                                <label for="box">box:</label>
+                                <label for="box">Box:</label>
                                 <select class="form-control" id="box" name="box" required>
                                     <option value="">Select a box</option>
                                 </select>
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
@@ -55,20 +55,21 @@
         document.getElementById('box').addEventListener('change', function (event) {
             const box = event.target.value;
             if (box) {
-                fetch(`/initialize_session?box=${encodeURIComponent(box)}`, {
-                    method: 'GET',
-                })
+                fetch(`/initialize_session?box=${encodeURIComponent(box)}`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log(data)
                         if (data.id) {
                             sessionId = data.id;
                             console.log('Session ID stored:', sessionId);
                         } else {
                             console.error('Failed to initialize session');
+                            alert('Failed to initialize session. The selected box might not be in a running state.');
                         }
                     })
-                    .catch(error => console.error('Error initializing session:', error));
+                    .catch(error => {
+                        console.error('Error initializing session:', error);
+                        alert('Error initializing session. Please try again.');
+                    });
             }
         });
 

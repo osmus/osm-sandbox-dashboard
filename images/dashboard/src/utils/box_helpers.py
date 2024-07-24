@@ -6,6 +6,14 @@ from schemas.boxes import BoxResponse
 from utils.kubectl import normalize_status
 
 
+def is_box_running(db: Session, box_name: str) -> bool:
+    """Query the database to check if the box is in the "Running" state"""
+    box_record = db.query(Boxes).filter(Boxes.name == box_name).order_by(Boxes.id.desc()).first()
+    if box_record and box_record.state == StateEnum.running:
+        return True
+    return False
+
+
 def update_box_state_and_age(
     db: Session, box_name: str, releases: list, pod_info: dict
 ) -> Optional[BoxResponse]:
@@ -14,6 +22,10 @@ def update_box_state_and_age(
 
     if not db_box:
         return None
+
+    if db_box.state == StateEnum.running:
+        box_response = BoxResponse.from_orm(db_box)
+        return box_response
 
     release = next((r for r in releases if r["name"] == box_name), None)
     if release:

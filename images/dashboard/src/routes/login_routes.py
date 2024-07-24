@@ -17,6 +17,8 @@ from database import get_db
 from utils.osm_credentials import get_osm_credentials
 from utils.sandbox_sessions import save_update_box_session, update_user_session
 from utils.sandbox_database import save_user_sandbox_db
+from utils.box_helpers import is_box_running
+
 from schemas.sessions import SessionResponse
 
 # Get OSM credentials
@@ -60,9 +62,13 @@ def test_page(request: Request, db: Session = Depends(get_db)):
 def initialize_session(request: Request, box: str = Query(...), db: Session = Depends(get_db)):
     """Generate and save a new cookie_id"""
     logging.info("Accessed /initialize_session endpoint")
+    if not is_box_running(db, box):
+        raise HTTPException(
+            status_code=400, detail="The specified box is not available or not in a running state"
+        )
+
     session_id = str(uuid.uuid4())
     new_session = Sessions(id=session_id, box=box, created_at=datetime.utcnow())
-
     db.add(new_session)
     db.commit()
     db.refresh(new_session)

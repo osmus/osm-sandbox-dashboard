@@ -97,8 +97,10 @@ async def get_boxes(db: Session = Depends(get_db)):
             if box_response:
                 box_responses.append(box_response)
 
+        sorted_box_responses = sorted(box_responses, key=lambda x: x.id)
+
         logging.info("Fetched all boxes successfully.")
-        return box_responses
+        return sorted_box_responses
     except Exception as e:
         logging.error(f"Error fetching boxes: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
