@@ -11,6 +11,14 @@ from utils.kubectl import normalize_status, describe_release_pods
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
+def is_box_running(db: Session, box_name: str) -> bool:
+    """Query the database to check if the box is in the "Running" state"""
+    box_record = db.query(Boxes).filter(Boxes.name == box_name).order_by(Boxes.id.desc()).first()
+    if box_record and box_record.state == StateEnum.running:
+        return True
+    return False
+
+
 async def check_release_status(namespace: str, box_id: int, db: Session):
     logging.info(f"Start state checcker job for box ID {box_id}")
 
@@ -38,7 +46,7 @@ async def check_release_status(namespace: str, box_id: int, db: Session):
             db.refresh(db_box)
             return
 
-        await asyncio.sleep(30)  # Check every 30 seconds
+        await asyncio.sleep(30)
 
     # If this point is reached, the pods did not reach the running state in time
     logging.error(f"Box {db_box.name} did not reach running state within the expected time.")
