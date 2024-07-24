@@ -23,6 +23,22 @@ spec:
         run: {{ .Release.Name }}-dashboard-web
     spec:
       serviceAccountName: helm-service-account
+      initContainers:
+        - name: init-check-db
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until nc -z -v -w30 ${POSTGRES_HOST} 5432
+              do
+                echo "Waiting for database connection..."
+                sleep 5
+              done
+              echo "Database is up!"
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-dashboard-common-env
       containers:
         - name: {{ .Chart.Name }}-dashboard
           image: "{{ .Values.dashboard.image.name }}:{{ .Values.dashboard.image.tag }}"
@@ -30,7 +46,7 @@ spec:
           #   - /bin/sh
           #   - -c
           #   - |
-          #     sleep 300000000000000
+          #     sleep 300000000;
           ports:
             - name: http
               containerPort: 8000
@@ -51,8 +67,8 @@ spec:
               cpu: {{ .Values.dashboard.resources.limits.cpu }}
           {{- end }}
           envFrom:
-          - configMapRef:
-              name: {{ .Release.Name }}-dashboard-common-env
+            - configMapRef:
+                name: {{ .Release.Name }}-dashboard-common-env
       {{- if .Values.dashboard.nodeSelector.enabled }}
       nodeSelector:
         {{ .Values.dashboard.nodeSelector.label_key }} : {{ .Values.dashboard.nodeSelector.label_value }}
