@@ -169,8 +169,7 @@ async def delete_box(box_name: str, db: Session = Depends(get_db)):
         end_datetime = datetime.utcnow()
         db_box.end_date = end_datetime
         db_box.state = StateEnum.terminated
-
-        age_in_hours = BoxResponse.calculate_age(db_box.start_date, end_datetime)
+        age_in_hours = BoxResponse.calculate_age(db_box.start_date)
         db_box.age = age_in_hours
         result = await delete_release(box_name, namespace)
         db.commit()

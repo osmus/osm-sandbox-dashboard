@@ -11,8 +11,9 @@ import utils.logging_config
 
 
 def is_box_running(db: Session, box_name: str) -> bool:
-    """Query the database to check if the box is in the "Running" state"""
+    """Check if the box is in the "Running" state"""
     box_record = db.query(Boxes).filter(Boxes.name == box_name).order_by(Boxes.id.desc()).first()
+
     if box_record and box_record.state == StateEnum.running:
         return True
     return False

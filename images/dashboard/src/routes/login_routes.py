@@ -62,7 +62,7 @@ def initialize_session(request: Request, box: str = Query(...), db: Session = De
     logging.info("Accessed /initialize_session endpoint")
     if not is_box_running(db, box):
         raise HTTPException(
-            status_code=400, detail="The specified box is not available or not in a running state"
+            status_code=400, detail=f'The specified box "{box}" is not available yet!'
         )
 
     session_id = str(uuid.uuid4())
