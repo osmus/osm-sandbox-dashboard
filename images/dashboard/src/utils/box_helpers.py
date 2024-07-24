@@ -7,8 +7,7 @@ import asyncio
 from models.boxes import Boxes, StateEnum
 from schemas.boxes import BoxResponse
 from utils.kubectl import normalize_status, describe_release_pods
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+import utils.logging_config
 
 
 def is_box_running(db: Session, box_name: str) -> bool:
@@ -46,9 +45,8 @@ async def check_release_status(namespace: str, box_id: int, db: Session):
             db.refresh(db_box)
             return
 
-        await asyncio.sleep(30)
+        await asyncio.sleep(20)
 
-    # If this point is reached, the pods did not reach the running state in time
     logging.error(f"Box {db_box.name} did not reach running state within the expected time.")
     db_box.state = StateEnum.failure
     db.commit()

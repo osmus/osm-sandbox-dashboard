@@ -20,9 +20,8 @@ from utils.kubectl import list_pods, normalize_status
 from models.boxes import Boxes, StateEnum
 from schemas.boxes import BoxBase, BoxResponse
 from utils.box_helpers import update_box_state_and_age, check_release_status
+import utils.logging_config
 
-
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 router = APIRouter()
 namespace = "default"
 sandbox_domain = os.getenv("SANDBOX_DOMAIN")
@@ -94,10 +93,19 @@ async def create_box(box: BoxBase, db: Session = Depends(get_db)):
 )
 async def get_boxes(db: Session = Depends(get_db)):
     try:
-        logging.info("Fetching all boxes from the database.")
-        boxes = db.query(Boxes).order_by(desc(Boxes.id)).all()
+        logging.info("Fetching all active boxes from the database.")
+
+        # Fetch only boxes with states Pending, Running, and Failure
+        boxes = (
+            db.query(Boxes)
+            .filter(Boxes.state.in_([StateEnum.pending, StateEnum.running, StateEnum.failure]))
+            .order_by(desc(Boxes.id))
+            .all()
+        )
+
         box_responses = [BoxResponse.from_orm(box) for box in boxes]
-        logging.info("Fetched all boxes successfully.")
+
+        logging.info("Fetched all active boxes successfully.")
         return box_responses
     except Exception as e:
         logging.error(f"Error fetching boxes: {str(e)}")
@@ -108,18 +116,27 @@ async def get_boxes(db: Session = Depends(get_db)):
     "/boxes/{box_name}",
     tags=["Boxes"],
     response_model=BoxResponse,
-    description="List an active box by name.",
+    description="Get an active box by name.",
 )
 async def get_box(box_name: str, db: Session = Depends(get_db)):
     try:
         logging.info(f"Fetching box with name: {box_name}.")
-        releases = await list_releases(namespace)
-        pod_info = list_pods(namespace)
 
-        box_response = update_box_state_and_age(db, box_name, releases, pod_info)
-        if not box_response:
+        # Fetch the box with the given name and state in Pending, Running, or Failure
+        box = (
+            db.query(Boxes)
+            .filter(
+                Boxes.name == box_name,
+                Boxes.state.in_([StateEnum.pending, StateEnum.running, StateEnum.failure]),
+            )
+            .first()
+        )
+
+        if not box:
             logging.warning(f"Box with name {box_name} not found.")
             raise HTTPException(status_code=404, detail="Box not found")
+
+        box_response = BoxResponse.from_orm(box)
 
         logging.info(f"Fetched box {box_name} successfully.")
         return box_response
@@ -137,27 +154,29 @@ async def delete_box(box_name: str, db: Session = Depends(get_db)):
     try:
         logging.info(f"Attempting to delete box with name: {box_name}.")
 
-        db_box = db.query(Boxes).filter(Boxes.name == box_name).first()
+        db_box = (
+            db.query(Boxes)
+            .filter(Boxes.name == box_name, Boxes.state != StateEnum.terminated)
+            .order_by(desc(Boxes.id))
+            .first()
+        )
+
         if not db_box:
-            logging.warning(f"Box with name {box_name} not found.")
-            raise HTTPException(status_code=404, detail="Box not found")
+            logging.warning(f"Box with name {box_name} not found or already terminated.")
+            raise HTTPException(status_code=404, detail="Box not found or already terminated")
 
         # Set end_date and calculate age
         end_datetime = datetime.utcnow()
         db_box.end_date = end_datetime
         db_box.state = StateEnum.terminated
 
-        age_timedelta = end_datetime - db_box.start_date
-        age_in_hours = round(age_timedelta.total_seconds() / 3600, 2)
-
+        age_in_hours = BoxResponse.calculate_age(db_box.start_date, end_datetime)
         db_box.age = age_in_hours
         result = await delete_release(box_name, namespace)
-
         db.commit()
         db.refresh(db_box)
 
         box_response = BoxResponse.from_orm(db_box)
-        box_response.age = age_in_hours
 
         logging.info(f"Box {box_name} deleted successfully.")
         return {

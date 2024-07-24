@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models.resources import Resources
 from utils.kubectl import list_nodes
+import utils.logging_config
 
 db_dependency = Annotated[Session, Depends(get_db)]
 

@@ -20,14 +20,12 @@ from utils.sandbox_database import save_user_sandbox_db
 from utils.box_helpers import is_box_running
 
 from schemas.sessions import SessionResponse
+import utils.logging_config
 
 # Get OSM credentials
 client_id, client_secret, redirect_uri, osm_instance_url, osm_instance_scopes = (
     get_osm_credentials()
 )
-
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 router = APIRouter()
 
