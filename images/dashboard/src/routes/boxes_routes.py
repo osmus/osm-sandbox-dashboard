@@ -5,7 +5,9 @@ from pydantic import BaseModel, validator, Field
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from datetime import datetime
+from sqlalchemy import desc
 import logging
+import asyncio
 
 from database import get_db
 from utils.helm import (
@@ -17,7 +19,7 @@ from utils.helm import (
 from utils.kubectl import list_pods, normalize_status
 from models.boxes import Boxes, StateEnum
 from schemas.boxes import BoxBase, BoxResponse
-from utils.box_helpers import update_box_state_and_age
+from utils.box_helpers import update_box_state_and_age, check_release_status
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -39,6 +41,7 @@ async def create_box(box: BoxBase, db: Session = Depends(get_db)):
     existing_box = (
         db.query(Boxes)
         .filter(Boxes.name == box.name, Boxes.state.in_([StateEnum.running, StateEnum.pending]))
+        .order_by(desc(Boxes.id))
         .first()
     )
 
@@ -76,6 +79,10 @@ async def create_box(box: BoxBase, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_box)
     logging.info(f"Box {box.name} created successfully.")
+
+    # Start the job to check the release status for the next 5 minutes
+    asyncio.create_task(check_release_status(namespace, db_box.id, db))
+
     return BoxResponse.from_orm(db_box)
 
 
@@ -87,20 +94,11 @@ async def create_box(box: BoxBase, db: Session = Depends(get_db)):
 )
 async def get_boxes(db: Session = Depends(get_db)):
     try:
-        logging.info("Fetching all boxes.")
-        releases = await list_releases(namespace)
-        pod_info = list_pods(namespace)
-
-        box_responses = []
-        for release in releases:
-            box_response = update_box_state_and_age(db, release["name"], releases, pod_info)
-            if box_response:
-                box_responses.append(box_response)
-
-        sorted_box_responses = sorted(box_responses, key=lambda x: x.id)
-
+        logging.info("Fetching all boxes from the database.")
+        boxes = db.query(Boxes).order_by(desc(Boxes.id)).all()
+        box_responses = [BoxResponse.from_orm(box) for box in boxes]
         logging.info("Fetched all boxes successfully.")
-        return sorted_box_responses
+        return box_responses
     except Exception as e:
         logging.error(f"Error fetching boxes: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

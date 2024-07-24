@@ -1,5 +1,3 @@
-import os
-import re
 import asyncio
 from kubernetes import client, config
 from concurrent.futures import ThreadPoolExecutor
@@ -8,7 +6,25 @@ from typing import List, Dict, Any
 import logging
 from pyhelm3 import Client
 import subprocess
+import re
+import os
+
 from kubernetes.config.config_exception import ConfigException
+
+
+async def describe_release_pods(namespace: str, box_name: str) -> bool:
+    config.load_incluster_config()
+    v1 = client.CoreV1Api()
+    ret = v1.list_namespaced_pod(namespace=namespace)
+    all_running = True
+
+    for i in ret.items:
+        if f"{box_name}-" in i.metadata.name:
+            if i.status.phase != "Running":
+                all_running = False
+                break
+
+    return all_running
 
 
 def list_pods(namespace):
