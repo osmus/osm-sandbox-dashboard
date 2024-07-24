@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional
-import datetime
+from datetime import datetime
 import re
 
 
@@ -35,14 +35,37 @@ class BoxBase(BaseModel):
         from_attributes = True
 
 
-class BoxResponse(BoxBase):
+class BoxResponse(BaseModel):
     id: int
+    name: str
     subdomain: str
+    resource_label: str
+    owner: str
     state: str
-    start_date: datetime.datetime
-    end_date: Optional[datetime.datetime] = None
-    age: Optional[float] = None
+    start_date: datetime
+    end_date: Optional[datetime]
+    age: Optional[float]
+
+    @staticmethod
+    def calculate_age(start_date: datetime) -> float:
+        current_date = datetime.utcnow()
+        age_in_hours = (current_date - start_date).total_seconds() / 3600
+        return round(age_in_hours, 2)
+
+    @staticmethod
+    def from_orm(box: "Boxes") -> "BoxResponse":
+        box_response = BoxResponse(
+            id=box.id,
+            name=box.name,
+            subdomain=box.subdomain,
+            resource_label=box.resource_label,
+            owner=box.owner,
+            state=box.state,
+            start_date=box.start_date,
+            end_date=box.end_date,
+            age=BoxResponse.calculate_age(box.start_date) if box.start_date else None,
+        )
+        return box_response
 
     class Config:
         orm_mode = True
-        from_attributes = True

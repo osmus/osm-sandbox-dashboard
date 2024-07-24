@@ -1,17 +1,57 @@
 from typing import Optional
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timedelta
+import logging
+import asyncio
+
 from models.boxes import Boxes, StateEnum
 from schemas.boxes import BoxResponse
-from utils.kubectl import normalize_status
+from utils.kubectl import normalize_status, describe_release_pods
+import utils.logging_config
 
 
 def is_box_running(db: Session, box_name: str) -> bool:
-    """Query the database to check if the box is in the "Running" state"""
+    """Check if the box is in the "Running" state"""
     box_record = db.query(Boxes).filter(Boxes.name == box_name).order_by(Boxes.id.desc()).first()
+
     if box_record and box_record.state == StateEnum.running:
         return True
     return False
+
+
+async def check_release_status(namespace: str, box_id: int, db: Session):
+    logging.info(f"Start state checcker job for box ID {box_id}")
+
+    end_time = datetime.utcnow() + timedelta(minutes=5)
+
+    while datetime.utcnow() < end_time:
+        logging.info(f"Check state for box ID {box_id}")
+
+        # Query the db_box within the current session
+        db_box = db.query(Boxes).get(box_id)
+        if db_box is None:
+            logging.error(f"Box with ID {box_id} not found.")
+            return
+
+        if db_box.state == StateEnum.running:
+            logging.info(f"Box {db_box.name} is already running.")
+            return
+
+        all_pods_running = await describe_release_pods(namespace, db_box.name)
+        if all_pods_running:
+            logging.info(f"All pods for box {db_box.name} are running.")
+            # Update the state to Running
+            db_box.state = StateEnum.running
+            db.commit()
+            db.refresh(db_box)
+            return
+
+        await asyncio.sleep(20)
+
+    logging.error(f"Box {db_box.name} did not reach running state within the expected time.")
+    db_box.state = StateEnum.failure
+    db.commit()
+    db.refresh(db_box)
 
 
 def update_box_state_and_age(

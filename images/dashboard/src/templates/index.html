@@ -63,7 +63,7 @@
                             console.log('Session ID stored:', sessionId);
                         } else {
                             console.error('Failed to initialize session');
-                            alert('Failed to initialize session. The selected box might not be in a running state.');
+                            alert(data.detail);
                         }
                     })
                     .catch(error => {
