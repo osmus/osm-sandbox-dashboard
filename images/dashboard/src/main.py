@@ -7,9 +7,12 @@ from database import engine
 from models import boxes
 from models import sessions
 from models import resources
+from models import users
 from routes.boxes_routes import router as boxes_routes
 from routes.login_routes import router as login_routes
 from routes.resources_routes import router as resources_routes
+from routes.auth_routes import router as auth_routes
+from routes.html_routes import router as html_router
 
 app = FastAPI()
 app.title = "OSM-Sandbox API"
@@ -17,8 +20,7 @@ app.version = "0.1.0"
 
 # Set up CORS
 origins = [
-    "https://*.osmsandbox.us",
-    "https://openstreetmap.us",
+    "*",
 ]
 
 app.add_middleware(
@@ -33,6 +35,7 @@ app.add_middleware(
 boxes.Base.metadata.create_all(bind=engine)
 sessions.Base.metadata.create_all(bind=engine)
 resources.Base.metadata.create_all(bind=engine)
+users.Base.metadata.create_all(bind=engine)
 
 
 # Home route
@@ -48,3 +51,5 @@ def home(request: Request):
 app.include_router(login_routes)
 app.include_router(boxes_routes)
 app.include_router(resources_routes)
+app.include_router(auth_routes)
+app.include_router(html_router)

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        window.onload = function() {
+            const token = getQueryParam('access_token');
+            if (token) {
+                localStorage.setItem('access_token', token);
+                window.history.replaceState({}, document.title, "/dashboard");
+                showProtectedPage();
+            } else if (localStorage.getItem('access_token')) {
+                showProtectedPage();
+            } else {
+                showLoginPage();
+            }
+        }
+
+        function showLoginPage() {
+            document.getElementById('login').style.display = 'block';
+            document.getElementById('protected').style.display = 'none';
+        }
+
+        function showProtectedPage() {
+            document.getElementById('login').style.display = 'none';
+            document.getElementById('protected').style.display = 'block';
+        }
+
+        async function getProtectedData() {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch('/protected', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            document.getElementById('message').innerText = data.message;
+        }
+
+        async function getAdminData() {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch('/admin', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            document.getElementById('message').innerText = data.message;
+        }
+
+        async function getCreatorData() {
+            const token = localStorage.getItem('access_token');
+            const response = await fetch('/creator', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            document.getElementById('message').innerText = data.message;
+        }
+    </script>
+</head>
+<body>
+    <div id="login" style="display:none;">
+        <h1>Login into the dashboard with OSM</h1>
+        <a href="/auth/osm">Login with OpenStreetMap</a>
+    </div>
+
+    <div id="protected" style="display:none;">
+        <h1>Protected Page</h1>
+        <p id="message"></p>
+        <button onclick="getProtectedData()">Get Protected Data</button>
+        <button onclick="getAdminData()">Get Admin Data</button>
+        <button onclick="getCreatorData()">Get Creator Data</button>
+    </div>
+</body>
+</html>
