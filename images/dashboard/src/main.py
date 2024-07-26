@@ -12,7 +12,9 @@ from routes.boxes_routes import router as boxes_routes
 from routes.login_routes import router as login_routes
 from routes.resources_routes import router as resources_routes
 from routes.auth_routes import router as auth_routes
+
 from routes.html_routes import router as html_router
+
 
 app = FastAPI()
 app.title = "OSM-Sandbox API"
@@ -48,8 +50,7 @@ def home(request: Request):
 
 
 # Include routes
-app.include_router(login_routes)
-app.include_router(boxes_routes)
-app.include_router(resources_routes)
-app.include_router(auth_routes)
-app.include_router(html_router)
+app.include_router(auth_routes, prefix="/v1")
+app.include_router(resources_routes, prefix="/v1")
+app.include_router(boxes_routes, prefix="/v1")
+app.include_router(login_routes, prefix="/v1")

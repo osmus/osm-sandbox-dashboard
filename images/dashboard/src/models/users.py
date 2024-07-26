@@ -14,6 +14,7 @@ class UserRole(enum.Enum):
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
-    osm_id = Column(Integer, unique=True, index=True)
     username = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True)
     role = Column(Enum(UserRole), default=UserRole.USER)
+    hashed_password = Column(String)
