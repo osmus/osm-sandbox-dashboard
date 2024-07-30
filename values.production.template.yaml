@@ -16,7 +16,7 @@ db:
     POSTGRES_USER: postgres
     POSTGRES_PASSWORD: {{POSTGRES_PASSWORD}}
   persistenceDisk:
-    enabled: false
+    enabled: true
     accessMode: ReadWriteOnce
     mountPath: /var/lib/postgresql/data
     subPath: postgresql-db
@@ -36,13 +36,17 @@ dashboard:
   ingressDomain: dashboard.osmsandbox.us
   env:
     ENVIRONMENT: production
-    #################### Dashboard ####################
+    #################### Dashboard osm auth  ####################
     OSM_CLIENT_ID: {{OSM_CLIENT_ID}}
     OSM_CLIENT_SECRET: {{OSM_CLIENT_SECRET}}
     REDIRECT_URI: "https://dashboard.osmsandbox.us/redirect_sandbox"
     OSM_INSTANCE_URL: "https://www.openstreetmap.org"
     OSM_INSTANCE_SCOPES: "read_prefs"
 
+    ## Token
+    ACCESS_TOKEN_EXPIRE_MINUTES:  1440
+    SECRET_KEY: {{SECRET_KEY}}
+    
     #################### Sandbox env vars ####################
     OSM_SANDBOX_CHART: https://osmus.github.io/osm-sandbox-deploy/osm-sandbox-deploy-0.0.1-0.dev.git.17.hed91bc0.tgz
     SANDBOX_NAMESPACE: 'default'
