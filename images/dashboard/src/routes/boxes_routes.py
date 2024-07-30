@@ -21,10 +21,10 @@ from schemas.boxes import BoxBase, BoxResponse
 from utils.box_helpers import update_box_state_and_age, check_release_status
 import utils.logging_config
 from utils.auth import verify_token, TokenData, verify_role
+from config import SANDBOX_DOMAIN
 
 router = APIRouter()
 namespace = "default"
-sandbox_domain = os.getenv("SANDBOX_DOMAIN")
 
 
 @router.post(
@@ -71,9 +71,10 @@ async def create_box(
 
     db_box = Boxes(
         name=box.name,
-        subdomain=f"{box.name}.{sandbox_domain}",
+        subdomain=f"{box.name}.{SANDBOX_DOMAIN}",
         resource_label=box.resource_label,
-        owner=token.username,  # Assign owner as the creator
+        owner=token.username,
+        description=box.description,
         state=StateEnum[state],
         start_date=datetime.strptime(deploy_date, "%Y-%m-%d %H:%M:%S"),
     )
@@ -94,14 +95,10 @@ async def create_box(
     tags=["Boxes"],
     response_model=List[BoxResponse],
     description="List all currently active boxes.",
-    dependencies=[Depends(verify_token)],
+    # dependencies=[Depends(verify_token)]
 )
-async def get_boxes(db: Session = Depends(get_db), token: TokenData = Depends(verify_token)):
-    if "admin" in token.roles:
-        boxes_query = db.query(Boxes)
-    else:
-        boxes_query = db.query(Boxes).filter(Boxes.owner == token.username)
-
+async def get_boxes(db: Session = Depends(get_db)):
+    boxes_query = db.query(Boxes)
     try:
         logging.info("Fetching all active boxes from the database.")
 
@@ -128,24 +125,20 @@ async def get_boxes(db: Session = Depends(get_db), token: TokenData = Depends(ve
     tags=["Boxes"],
     response_model=BoxResponse,
     description="Get an active box by name.",
-    dependencies=[Depends(verify_token)],
 )
-async def get_box(
-    box_name: str, db: Session = Depends(get_db), token: TokenData = Depends(verify_token)
-):
-    if "admin" in token.roles:
-        box_query = db.query(Boxes)
-    else:
-        box_query = db.query(Boxes).filter(Boxes.owner == token.username)
-
+async def get_box(box_name: str, db: Session = Depends(get_db)):
     try:
         logging.info(f"Fetching box with name: {box_name}.")
 
         # Fetch the box with the given name and state in Pending, Running, or Failure
-        box = box_query.filter(
-            Boxes.name == box_name,
-            Boxes.state.in_([StateEnum.pending, StateEnum.running, StateEnum.failure]),
-        ).first()
+        box = (
+            db.query(Boxes)
+            .filter(
+                Boxes.name == box_name,
+                Boxes.state.in_([StateEnum.pending, StateEnum.running, StateEnum.failure]),
+            )
+            .first()
+        )
 
         if not box:
             logging.warning(f"Box with name {box_name} not found.")
@@ -170,22 +163,22 @@ async def delete_box(
     box_name: str, db: Session = Depends(get_db), token: TokenData = Depends(verify_token)
 ):
     if "admin" in token.roles:
-        box_query = db.query(Boxes)
+        box_query = db.query(Boxes).filter(Boxes.name == box_name)
     else:
-        box_query = db.query(Boxes).filter(Boxes.owner == token.username)
-
+        box_query = db.query(Boxes).filter(Boxes.name == box_name)
     try:
         logging.info(f"Attempting to delete box with name: {box_name}.")
 
         db_box = (
-            box_query.filter(Boxes.name == box_name, Boxes.state != StateEnum.terminated)
-            .order_by(desc(Boxes.id))
-            .first()
+            box_query.filter(Boxes.state != StateEnum.terminated).order_by(desc(Boxes.id)).first()
         )
-
         if not db_box:
             logging.warning(f"Box with name {box_name} not found or already terminated.")
             raise HTTPException(status_code=404, detail="Box not found or already terminated")
+
+        if "creator" in token.roles and db_box.owner != token.username:
+            logging.warning(f"User {token.username} is not allowed to delete box {box_name}.")
+            raise HTTPException(status_code=403, detail="You are not allowed to delete this box")
 
         # Set end_date and calculate age
         end_datetime = datetime.utcnow()
@@ -223,7 +216,7 @@ async def get_boxes_history(
     page_size: int = Query(10, ge=1, le=100),
     token: TokenData = Depends(verify_token),
 ):
-    verify_role(token, ["admin"])  # Only admin can access the history
+    verify_role(token, ["admin"])
     try:
         logging.info("Fetching boxes history from the database with pagination.")
         offset = (page - 1) * page_size
@@ -235,6 +228,7 @@ async def get_boxes_history(
                 state=box.state,
                 age=box.age,
                 resource_label=box.resource_label,
+                description=box.description,
                 owner=box.owner,
                 subdomain=box.subdomain,
                 start_date=box.start_date.isoformat() if box.start_date else None,

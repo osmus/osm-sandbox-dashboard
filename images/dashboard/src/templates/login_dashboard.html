@@ -27,14 +27,28 @@
                 <form id="login-form">
                     <div class="form-group">
                         <label for="username">Username:</label>
-                        <input type="text" class="form-control" id="username" name="username" value="leya" required>
+                        <input type="text" class="form-control" id="username" name="username" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password:</label>
-                        <input type="password" class="form-control" id="password" name="password" value="1234" required>
+                        <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Display Token and Username -->
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="token-display">Token:</label>
+                    <textarea class="form-control" id="token-display" rows="5" readonly></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="username-display">Username:</label>
+                    <input type="text" class="form-control" id="username-display" readonly>
+                </div>
             </div>
         </div>
     </div>
@@ -46,7 +60,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            const response = await fetch('/v1/login', {
+            const response = await fetch('/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -59,16 +73,16 @@
 
             const data = await response.json();
             if (response.ok) {
-                alert('Login successful');
                 // Save the token and username in local storage
                 localStorage.setItem('access_token', data.access_token);
                 localStorage.setItem('username', username);
+                
+                // Update the display fields
+                document.getElementById('token-display').value = data.access_token;
+                document.getElementById('username-display').value = username;
 
                 // Update the navigation bar
                 document.getElementById('user-info').textContent = `Logged in as ${username}`;
-
-                // Redirect to the dashboard
-                window.location.href = '/dashboard';
             } else {
                 alert('Login failed: ' + data.detail);
             }
@@ -76,8 +90,13 @@
 
         window.onload = function () {
             const username = localStorage.getItem('username');
+            const token = localStorage.getItem('access_token');
             if (username) {
                 document.getElementById('user-info').textContent = `Logged in as ${username}`;
+                document.getElementById('username-display').value = username;
+            }
+            if (token) {
+                document.getElementById('token-display').value = token;
             }
         };
     </script>

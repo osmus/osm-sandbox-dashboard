@@ -20,6 +20,7 @@ class Boxes(Base):
     subdomain = Column(String, nullable=False)
     resource_label = Column(String, nullable=False)
     owner = Column(String, nullable=False)
+    description = Column(String, nullable=False)
     state = Column(SQLEnum(StateEnum), nullable=False)
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=True)

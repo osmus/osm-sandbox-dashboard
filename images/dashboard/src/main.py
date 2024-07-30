@@ -11,6 +11,7 @@ from routes.login_routes import router as login_routes
 from routes.resources_routes import router as resources_routes
 from routes.auth_routes import router as auth_routes
 from routes.html_routes import router as html_router
+from routes.user_admin_routes import router as user_admin_routes
 
 app = FastAPI()
 app.title = "OSM-Sandbox API"
@@ -35,7 +36,7 @@ resources.Base.metadata.create_all(bind=engine)
 users.Base.metadata.create_all(bind=engine)
 
 # Define the OAuth2 scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="v1/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 
 # Home route
@@ -48,10 +49,11 @@ def home(request: Request):
 
 
 # Include routes
-app.include_router(auth_routes, prefix="/v1")
+app.include_router(auth_routes)
+app.include_router(user_admin_routes)
 app.include_router(resources_routes, prefix="/v1")
 app.include_router(boxes_routes, prefix="/v1")
-app.include_router(login_routes, prefix="/v1")
+app.include_router(login_routes)
 app.include_router(html_router)
 
 # Run the app

@@ -24,7 +24,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 @router.post(
     "/register",
-    tags=["Dashboard auth"],
+    tags=["Dashboard authentication"],
     response_model=UserOut,
     description="Register a user, by default with user role",
 )
@@ -45,7 +45,7 @@ def register(user: UserCreate, db: db_dependency):
     return db_user
 
 
-@router.post("/login", tags=["Dashboard auth"], response_model=Token, description="Login")
+@router.post("/login", tags=["Dashboard authentication"], response_model=Token, description="Login")
 def login_for_access_token(db: db_dependency, form_data: OAuth2PasswordRequestForm = Depends()):
     logging.info(f"Login attempt for user: {form_data.username}")
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -62,8 +62,3 @@ def login_for_access_token(db: db_dependency, form_data: OAuth2PasswordRequestFo
     )
     logging.info(f"Login successful for user: {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
-
-
-@router.get("/me", tags=["Dashboard auth"], response_model=UserOut)
-def read_users_me(current_user: User = Depends(get_current_user)):
-    return current_user

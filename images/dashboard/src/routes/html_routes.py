@@ -6,11 +6,6 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 
-@router.get("/login", response_class=HTMLResponse, tags=["Testing page"])
-async def read_root(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-
-
-@router.get("/dashboard", response_class=HTMLResponse, tags=["Testing page"])
-async def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+@router.get("/login_dashboard", response_class=HTMLResponse, tags=["Testing pages"])
+async def login(request: Request):
+    return templates.TemplateResponse("login_dashboard.html", {"request": request})
