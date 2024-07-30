@@ -12,6 +12,8 @@ data:
     REDIRECT_URI: {{ .Values.dashboard.env.REDIRECT_URI | quote }}
     OSM_INSTANCE_URL: {{ .Values.dashboard.env.OSM_INSTANCE_URL | quote }}
     OSM_INSTANCE_SCOPES: {{ .Values.dashboard.env.OSM_INSTANCE_SCOPES | quote }}
+    ACCESS_TOKEN_EXPIRE_MINUTES: {{ .Values.dashboard.env.ACCESS_TOKEN_EXPIRE_MINUTES | quote }}
+    SECRET_KEY: {{ .Values.dashboard.env.SECRET_KEY | quote }}
 
     # Dashboard Db Postgres credentials
     DB_PORT: "5432"
