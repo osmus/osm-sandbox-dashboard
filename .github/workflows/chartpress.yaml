@@ -62,6 +62,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.PRODUCTION_POSTGRES_PASSWORD }}
           OSM_CLIENT_ID: ${{ secrets.PRODUCTION_OSM_CLIENT_ID }}
           OSM_CLIENT_SECRET: ${{ secrets.PRODUCTION_OSM_CLIENT_SECRET }}
+          SECRET_KEY: ${{ secrets.PRODUCTION_SECRET_KEY }}
           # Sandbox
           SANDBOX_PG_DB_USER: ${{ secrets.PRODUCTION_SANDBOX_PG_DB_USER }}
           SANDBOX_PG_DB_PASSWORD: ${{ secrets.PRODUCTION_SANDBOX_PG_DB_PASSWORD }}
