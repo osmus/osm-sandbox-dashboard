@@ -12,11 +12,10 @@ from security import (
     get_password_hash,
     get_current_user,
     authenticate_user,
-    create_access_token,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
 )
+from config import ACCESS_TOKEN_EXPIRE_MINUTES
+from utils.auth import create_access_token, TokenData
 import utils.logging_config
-
 
 router = APIRouter()
 
@@ -59,13 +58,12 @@ def login_for_access_token(db: db_dependency, form_data: OAuth2PasswordRequestFo
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username, "roles": [user.role.value]}, expires_delta=access_token_expires
     )
     logging.info(f"Login successful for user: {form_data.username}")
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-# # Get current user endpoint
-# @router.get("/me", tags=["Dashboard auth"], response_model=UserOut)
-# def read_users_me(current_user: User = Depends(get_current_user)):
-#     return current_user
+@router.get("/me", tags=["Dashboard auth"], response_model=UserOut)
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user

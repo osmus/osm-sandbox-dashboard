@@ -31,39 +31,28 @@
         function showProtectedPage() {
             document.getElementById('login').style.display = 'none';
             document.getElementById('protected').style.display = 'block';
+            getResourcesData(); // Fetch resources data on page load
         }
 
-        async function getProtectedData() {
+        async function getResourcesData() {
             const token = localStorage.getItem('access_token');
-            const response = await fetch('/protected', {
+            const response = await fetch('/v1/resources', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
-            const data = await response.json();
-            document.getElementById('message').innerText = data.message;
+            if (response.ok) {
+                const data = await response.json();
+                displayResourcesData(data);
+            } else {
+                const errorData = await response.json();
+                document.getElementById('message').innerText = `Error: ${errorData.detail}`;
+            }
         }
 
-        async function getAdminData() {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch('/admin', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
-            document.getElementById('message').innerText = data.message;
-        }
-
-        async function getCreatorData() {
-            const token = localStorage.getItem('access_token');
-            const response = await fetch('/creator', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            const data = await response.json();
-            document.getElementById('message').innerText = data.message;
+        function displayResourcesData(data) {
+            const resourcesField = document.getElementById('resources-field');
+            resourcesField.value = JSON.stringify(data, null, 2); // Display formatted JSON data
         }
     </script>
 </head>
@@ -76,9 +65,7 @@
     <div id="protected" style="display:none;">
         <h1>Protected Page</h1>
         <p id="message"></p>
-        <button onclick="getProtectedData()">Get Protected Data</button>
-        <button onclick="getAdminData()">Get Admin Data</button>
-        <button onclick="getCreatorData()">Get Creator Data</button>
+        <textarea id="resources-field" rows="20" cols="80"></textarea> <!-- Textarea to display resources data -->
     </div>
 </body>
 </html>

@@ -1,19 +1,24 @@
-import os
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Annotated
 from sqlalchemy.orm import Session
 from database import get_db
 from models.resources import Resources
 from utils.kubectl import list_nodes
-import utils.logging_config
+from utils.auth import verify_token, TokenData, verify_role
+from typing import List, Annotated
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
 router = APIRouter()
 
 
-@router.get("/resources", tags=["Resources"])
-async def get_resources(db: db_dependency):
+@router.get(
+    "/resources",
+    tags=["Resources"],
+    response_model=List[dict],
+    dependencies=[Depends(verify_token)],
+)
+async def get_resources(db: db_dependency, token: TokenData = Depends(verify_token)):
+    verify_role(token, ["creator", "admin"])
     try:
         nodes = await list_nodes()
         resources = db.query(Resources).all()
