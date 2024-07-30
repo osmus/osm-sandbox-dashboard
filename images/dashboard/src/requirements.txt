@@ -10,3 +10,6 @@ argon2-cffi
 awscli
 pyhelm3
 kubernetes
+fastapi_login
+passlib
+python-jose

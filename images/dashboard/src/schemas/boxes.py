@@ -17,11 +17,11 @@ class BoxBase(BaseModel):
         description="A label that specifies the type of machine where the box will run. The value should be filled with one of the values from the /resources endpoint.",
         example="t3-medium-ondemand",
     )
-    owner: str = Field(
+    description: str = Field(
         ...,
-        title="Owner",
-        description="The name or identifier of the person or entity responsible for the box.",
-        example="Leya",
+        title="Description",
+        description="Box's description",
+        example="My new osm sandbox",
     )
 
     @validator("name")
@@ -40,6 +40,7 @@ class BoxResponse(BaseModel):
     name: str
     subdomain: str
     resource_label: str
+    description: str
     owner: str
     state: str
     start_date: datetime
@@ -59,6 +60,7 @@ class BoxResponse(BaseModel):
             name=box.name,
             subdomain=box.subdomain,
             resource_label=box.resource_label,
+            description=box.description,
             owner=box.owner,
             state=box.state,
             start_date=box.start_date,

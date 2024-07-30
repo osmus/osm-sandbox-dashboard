@@ -3,12 +3,13 @@ import psycopg2
 from psycopg2 import OperationalError
 from argon2 import PasswordHasher
 from datetime import datetime
-
-db_port = os.getenv("SANDBOX_PG_DB_PORT")
-db_user = os.getenv("SANDBOX_PG_DB_USER")
-db_password = os.getenv("SANDBOX_PG_DB_PASSWORD")
-db_name = os.getenv("SANDBOX_PG_DB_NAME")
-domain = os.getenv("SANDBOX_DOMAIN")
+from config import (
+    SANDBOX_PG_DB_PORT,
+    SANDBOX_PG_DB_USER,
+    SANDBOX_PG_DB_PASSWORD,
+    SANDBOX_PG_DB_NAME,
+    SANDBOX_DOMAIN,
+)
 
 # Start hasher de Argon2
 argon2Hasher = PasswordHasher(
@@ -28,10 +29,10 @@ def check_database_instance(db_host: str) -> str:
     try:
         connection = psycopg2.connect(
             host=db_host,
-            port=db_port,
-            user=db_user,
-            password=db_password,
-            dbname=db_name,
+            port=SANDBOX_PG_DB_PORT,
+            user=SANDBOX_PG_DB_USER,
+            password=SANDBOX_PG_DB_PASSWORD,
+            dbname=SANDBOX_PG_DB_NAME,
         )
         connection.close()
         return "running"
@@ -55,11 +56,11 @@ def save_user_sandbox_db(box_name: str, user_name: str) -> str:
     pass_crypt = argon2Hasher.hash(user_name)
     # Connect to db
     conn = psycopg2.connect(
-        dbname=db_name,
-        user=db_user,
-        password=db_password,
+        dbname=SANDBOX_PG_DB_NAME,
+        user=SANDBOX_PG_DB_USER,
+        password=SANDBOX_PG_DB_PASSWORD,
         host=f"{box_name}-db",
-        port=db_port,
+        port=SANDBOX_PG_DB_PORT,
     )
     cur = conn.cursor()
     # Insert a new user
@@ -73,7 +74,7 @@ def save_user_sandbox_db(box_name: str, user_name: str) -> str:
     ON CONFLICT (email) DO NOTHING;
     """
     values = (
-        f"{user_name}@{box_name}.{domain}",
+        f"{user_name}@{box_name}.{SANDBOX_DOMAIN}",
         user_name,
         pass_crypt,
         True,

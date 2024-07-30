@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Dashboard</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <span class="nav-link" id="user-info"></span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="container mt-5">
+        <h2 class="text-center">Login</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Login</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Display Token and Username -->
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="token-display">Token:</label>
+                    <textarea class="form-control" id="token-display" rows="5" readonly></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="username-display">Username:</label>
+                    <input type="text" class="form-control" id="username-display" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    'username': username,
+                    'password': password
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                // Save the token and username in local storage
+                localStorage.setItem('access_token', data.access_token);
+                localStorage.setItem('username', username);
+                
+                // Update the display fields
+                document.getElementById('token-display').value = data.access_token;
+                document.getElementById('username-display').value = username;
+
+                // Update the navigation bar
+                document.getElementById('user-info').textContent = `Logged in as ${username}`;
+            } else {
+                alert('Login failed: ' + data.detail);
+            }
+        });
+
+        window.onload = function () {
+            const username = localStorage.getItem('username');
+            const token = localStorage.getItem('access_token');
+            if (username) {
+                document.getElementById('user-info').textContent = `Logged in as ${username}`;
+                document.getElementById('username-display').value = username;
+            }
+            if (token) {
+                document.getElementById('token-display').value = token;
+            }
+        };
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

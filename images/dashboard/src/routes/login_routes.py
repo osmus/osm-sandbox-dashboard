@@ -49,11 +49,11 @@ templates_path = os.path.join(os.path.dirname(__file__), "./../templates")
 templates = Jinja2Templates(directory=templates_path)
 
 
-@router.get("/login_sandbox", tags=["Test login"])
+@router.get("/login_sandbox", tags=["Testing pages"])
 def test_page(request: Request, db: Session = Depends(get_db)):
     """Page for login test"""
     logging.info("Accessed /login_sandbox endpoint")
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("login_sandbox.html", {"request": request})
 
 
 @router.get("/initialize_session", tags=["OSM Session Sandbox"], response_model=SessionResponse)
