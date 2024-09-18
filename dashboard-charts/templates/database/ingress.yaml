@@ -1,0 +1,19 @@
+{{- if .Values.db.enabled -}}
+apiVersion: apps/v1
+kind: "Ingress"
+metadata:
+  name: {{ .Release.Name }}-dashboard-db-ingress
+  labels:
+    app: {{ template "osm-sandbox.name" . }}
+    component: db-ingress
+    environment: {{ .Values.environment }}
+    release: {{ .Release.Name }}
+spec:
+  defaultBackend:
+    service:
+      name: {{ .Release.Name }}-dashboard-db
+      port:
+        number: 5432
+status:
+  loadBalancer: {}
+{{- end }}
