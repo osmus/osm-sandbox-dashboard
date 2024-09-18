@@ -5,6 +5,8 @@ metadata:
 spec:
   selector:
     app: ncem-db
+    release: ncem
+    run: ncem-db
   ports:
     - protocol: TCP
       port: 5432
