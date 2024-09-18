@@ -23,6 +23,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: ncem-db-0
+            name: ncem-db
             port:
-              number: 80
+              number: 5432
