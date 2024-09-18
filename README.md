@@ -11,7 +11,7 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 
-## Production Deploy
+## Production deploy
 
 ```sh
 aws ec2 create-volume \
@@ -23,3 +23,4 @@ aws ec2 create-volume \
 ```
 
 Update the IR with the volume ID in the values file, and make a commit in the repository. This will deploy the app in Kubernetes.
+
