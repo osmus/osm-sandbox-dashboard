@@ -4,7 +4,7 @@ metadata:
   name: ncem-db-lb
 spec:
   selector:
-    app: ncem-db
+    app: osm-seed
     release: ncem
     run: ncem-db
   ports:
