@@ -31,7 +31,6 @@ class BoxBase(BaseModel):
         return value
 
     class Config:
-        orm_mode = True
         from_attributes = True
 
 
@@ -70,4 +69,4 @@ class BoxResponse(BaseModel):
         return box_response
 
     class Config:
-        orm_mode = True
+        from_attributes = True
