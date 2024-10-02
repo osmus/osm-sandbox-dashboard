@@ -14,3 +14,4 @@ fastapi_login
 passlib
 python-jose
 python-dotenv
+python-multipart
