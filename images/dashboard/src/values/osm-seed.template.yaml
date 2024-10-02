@@ -71,7 +71,7 @@ osm-seed:
       label_key: nodegroup_type
       label_value: {{LABEL_VALUE}}
     env:
-      URL_FILE_TO_IMPORT: "https://www.googleapis.com/drive/v3/files/189MkZIIk7Iy7maX-DObQxjMY_SqJDR9a/?key=AIzaSyDpL9w6m7KxQTn3AwFmaZ-tyf64AIT8vRg&alt=media"
+      URL_FILE_TO_IMPORT: "https://github.com/osmus/osm-sandbox-data/raw/refs/heads/main/ncem/cumberland_buildings.osm"
     resources:
       enabled: false
       requests:
