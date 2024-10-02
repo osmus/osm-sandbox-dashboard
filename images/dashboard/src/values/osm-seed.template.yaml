@@ -74,12 +74,6 @@ osm-seed:
       URL_FILE_TO_IMPORT: "https://github.com/osmus/osm-sandbox-data/raw/refs/heads/main/ncem/cumberland_buildings.osm.bz2"
     resources:
       enabled: false
-      requests:
-        memory: "1Gi"
-        cpu: "2"
-      limits:
-        memory: "2Gi"
-        cpu: "2.5"
   memcached:
     enabled: true
     nodeSelector:
