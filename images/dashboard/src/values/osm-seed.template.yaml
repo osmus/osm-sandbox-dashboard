@@ -72,9 +72,14 @@ osm-seed:
       label_value: {{LABEL_VALUE}}
     env:
       URL_FILE_TO_IMPORT: "https://www.googleapis.com/drive/v3/files/189MkZIIk7Iy7maX-DObQxjMY_SqJDR9a/?key=AIzaSyDpL9w6m7KxQTn3AwFmaZ-tyf64AIT8vRg&alt=media"
-#{{URL_FILE_TO_IMPORT}}
     resources:
       enabled: false
+      requests:
+        memory: "1Gi"
+        cpu: "2"
+      limits:
+        memory: "2Gi"
+        cpu: "2.5"
   memcached:
     enabled: true
     nodeSelector:
