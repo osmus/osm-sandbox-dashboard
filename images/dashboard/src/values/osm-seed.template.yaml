@@ -61,7 +61,7 @@ osm-seed:
       maxReplicas: 10
       cpuUtilization: 80
     sharedMemorySize: 16Mi
-  sandboxPopulateApidb:
+  populateApidb:
     enabled: true
     nodeSelector:
       enabled: true
