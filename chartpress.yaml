@@ -6,3 +6,4 @@ charts:
         valuesPath: dashboard.image
     valuesFiles:
       - charts/values.template.yaml
+      - values.production.template.yaml
