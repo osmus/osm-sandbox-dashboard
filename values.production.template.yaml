@@ -48,7 +48,7 @@ dashboard:
     SECRET_KEY: {{SECRET_KEY}}
     
     #################### Sandbox env vars ####################
-    OSM_SANDBOX_CHART: https://osmus.github.io/osm-sandbox-deploy/osm-sandbox-deploy-0.0.1-0.dev.git.31.h6de550e.tgz
+    OSM_SANDBOX_CHART: https://osmus.github.io/osm-sandbox-deploy/osm-sandbox-deploy-0.0.1-0.dev.git.33.hef6e2bc.tgz
     SANDBOX_NAMESPACE: 'default'
 
     #################### Sandbox Database env vars ####################
