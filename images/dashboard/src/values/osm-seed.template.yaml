@@ -63,8 +63,6 @@ osm-seed:
     sharedMemorySize: 16Mi
   populateApidb:
     enabled: true
-    image:
-      pullPolicy: Always
     nodeSelector:
       enabled: true
       label_key: nodegroup_type

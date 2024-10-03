@@ -27,7 +27,7 @@ jobs:
         run: |
           pip install chartpress six ruamel.yaml
       - name: Run Chartpress
-        run: chartpress --push
+        run: chartpress --force-build --force-push
         env:
           GITHUB_TOKEN: ${{ secrets.GHCR_GITHUB_TOKEN }}
       - name: Staging - substitute secrets
