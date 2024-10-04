@@ -81,9 +81,6 @@ def initialize_session(request: Request, box: str = Query(...), end_redirect_uri
             "created_at": new_session.created_at.isoformat(),
         }
     )
-    #domain = "dashboard.osmsandbox.us"
-    #if end_redirect_uri is not None:
-    #    domain = urlparse(end_redirect_uri).netloc
 
     logging.info("Generated new session_id and saved to database")
     return response
