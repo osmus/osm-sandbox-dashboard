@@ -86,10 +86,13 @@ def initialize_session(request: Request, box: str = Query(...), db: Session = De
 
 @router.get("/osm_authorization", tags=["OSM Session Sandbox"])
 def osm_authorization(
-    request: Request, session_id: str = Query(...), db: Session = Depends(get_db)
+    request: Request, session_id: str = Query(...), end_redirect_uri: str = None, db: Session = Depends(get_db)
 ):
     """Enable OSM authorization"""
     logging.info(f"Accessed /osm_authorization with session_id: {session_id}")
+
+    if end_redirect_uri is None:
+        end_redirect_uri = redirect_uri
 
     # Verify if session id exists
     db_session = db.query(Sessions).filter(Sessions.id == session_id).first()
@@ -98,7 +101,7 @@ def osm_authorization(
         raise HTTPException(status_code=404, detail="session_id not found")
 
     # Redirect to OSM auth
-    auth_url = f"{osm_instance_url}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={osm_instance_scopes}"
+    auth_url = f"{osm_instance_url}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={end_redirect_uri}&scope={osm_instance_scopes}"
     logging.info(f"Redirecting to auth URL: {auth_url}")
     return RedirectResponse(url=auth_url, status_code=303)
 
