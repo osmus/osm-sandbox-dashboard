@@ -57,7 +57,7 @@ def test_page(request: Request, db: Session = Depends(get_db)):
 
 
 @router.get("/initialize_session", tags=["OSM Session Sandbox"], response_model=SessionResponse)
-def initialize_session(request: Request, box: str = Query(...), db: Session = Depends(get_db)):
+def initialize_session(request: Request, box: str = Query(...), end_redirect_uri: str = None, db: Session = Depends(get_db)):
     """Generate and save a new cookie_id"""
     logging.info("Accessed /initialize_session endpoint")
     if not is_box_running(db, box):
@@ -66,7 +66,7 @@ def initialize_session(request: Request, box: str = Query(...), db: Session = De
         )
 
     session_id = str(uuid.uuid4())
-    new_session = Sessions(id=session_id, box=box, created_at=datetime.utcnow())
+    new_session = Sessions(id=session_id, box=box, end_redirect_uri=end_redirect_uri, created_at=datetime.utcnow())
     db.add(new_session)
     db.commit()
     db.refresh(new_session)
@@ -75,6 +75,7 @@ def initialize_session(request: Request, box: str = Query(...), db: Session = De
         content={
             "id": new_session.id,
             "box": new_session.box,
+            "end_redirect_uri": new_session.end_redirect_uri,
             "created_at": new_session.created_at.isoformat(),
         }
     )
@@ -86,13 +87,10 @@ def initialize_session(request: Request, box: str = Query(...), db: Session = De
 
 @router.get("/osm_authorization", tags=["OSM Session Sandbox"])
 def osm_authorization(
-    request: Request, session_id: str = Query(...), end_redirect_uri: str = None, db: Session = Depends(get_db)
+    request: Request, session_id: str = Query(...), db: Session = Depends(get_db)
 ):
     """Enable OSM authorization"""
     logging.info(f"Accessed /osm_authorization with session_id: {session_id}")
-
-    if end_redirect_uri is None:
-        end_redirect_uri = redirect_uri
 
     # Verify if session id exists
     db_session = db.query(Sessions).filter(Sessions.id == session_id).first()
@@ -130,12 +128,16 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
             save_user_sandbox_db(session_obj.box, session_obj.user)
             logging.info(f"Updated session for session_id: {session_id}")
 
-            # Construct the subdomain URL
-            box = session_obj.box
-            user = session_obj.user
-            sub_domain_url = f"https://{box}.{domain}/login?user={user}"
-            logging.info(f"Redirecting to subdomain URL: {sub_domain_url}")
-            return RedirectResponse(url=sub_domain_url)
+            end_redirect_uri = session_obj.end_redirect_uri
+
+            if end_redirect_uri is None:
+                # Construct the subdomain URL
+                box = session_obj.box
+                user = session_obj.user
+                end_redirect_uri = f"https://{box}.{domain}/login?user={user}"
+
+            logging.info(f"Redirecting to URL: {end_redirect_uri}")
+            return RedirectResponse(url=end_redirect_uri)
         else:
             logging.error("Cookie ID not found")
             raise HTTPException(status_code=404, detail="Check if instance exists")

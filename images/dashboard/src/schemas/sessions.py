@@ -7,6 +7,7 @@ class SessionResponse(BaseModel):
     id: str
     user: Optional[str] = None
     box: str
+    end_redirect_uri: Optional[str] = None
     created_at: datetime
 
     class Config:
