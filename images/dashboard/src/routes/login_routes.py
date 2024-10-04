@@ -144,6 +144,10 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
                 user = session_obj.user
                 end_redirect_uri = f"https://{box}.{domain}/login?user={user}"
 
+            db_session = db.query(Sessions).filter(Sessions.id == session_id).first()
+            db.delete(db_session)
+            db.commit()
+
             logging.info(f"Redirecting to URL: {end_redirect_uri}")
             response = RedirectResponse(url=end_redirect_uri)
             response.delete_cookie("cookie_id")
