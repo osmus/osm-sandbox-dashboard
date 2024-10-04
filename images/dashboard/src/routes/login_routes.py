@@ -133,9 +133,9 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
             save_user_sandbox_db(session_obj.box, session_obj.user)
             logging.info(f"Updated session for session_id: {session_id}")
 
-            end_redirect_uri = session_obj.end_redirect_uri
+            end_redirect_uri = f"{session_obj.end_redirect_uri}?user={user}"
 
-            if end_redirect_uri is None:
+            if session_obj.end_redirect_uri is None:
                 # Construct the subdomain URL
                 box = session_obj.box
                 user = session_obj.user
