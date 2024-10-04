@@ -81,13 +81,11 @@ def initialize_session(request: Request, box: str = Query(...), end_redirect_uri
             "created_at": new_session.created_at.isoformat(),
         }
     )
-    domain = "dashboard.osmsandbox.us"
-    if end_redirect_uri is not None:
-        domain = urlparse(end_redirect_uri).netloc
+    #domain = "dashboard.osmsandbox.us"
+    #if end_redirect_uri is not None:
+    #    domain = urlparse(end_redirect_uri).netloc
 
-    # Set cookie_id with session_id
-    response.set_cookie(key="cookie_id", value=session_id, max_age=120, domain=domain)
-    logging.info("Generated new cookie_id and saved to database")
+    logging.info("Generated new session_id and saved to database")
     return response
 
 
@@ -107,7 +105,11 @@ def osm_authorization(
     # Redirect to OSM auth
     auth_url = f"{osm_instance_url}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={osm_instance_scopes}"
     logging.info(f"Redirecting to auth URL: {auth_url}")
-    return RedirectResponse(url=auth_url, status_code=303)
+    
+    response = RedirectResponse(url=auth_url, status_code=303)
+    # Set cookie_id with session_id
+    response.set_cookie(key="cookie_id", value=session_id, max_age=120)
+    return response
 
 
 @router.get("/redirect_sandbox", tags=["OSM Session Sandbox"])
