@@ -133,12 +133,12 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
             save_user_sandbox_db(session_obj.box, session_obj.user)
             logging.info(f"Updated session for session_id: {session_id}")
 
-            end_redirect_uri = f"{session_obj.end_redirect_uri}?user={user}"
+            box = session_obj.box
+            user = session_obj.user
+
+            end_redirect_uri = f"{session_obj.end_redirect_uri}?box={box}user={user}"
 
             if session_obj.end_redirect_uri is None:
-                # Construct the subdomain URL
-                box = session_obj.box
-                user = session_obj.user
                 end_redirect_uri = f"https://{box}.{domain}/login?user={user}"
 
             db_session = db.query(Sessions).filter(Sessions.id == session_id).first()
