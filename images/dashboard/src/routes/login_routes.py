@@ -10,6 +10,8 @@ from requests_oauthlib import OAuth2Session
 from models.sessions import Sessions
 from datetime import datetime
 
+from urllib.parse import urlparse
+
 # Import database utils
 from database import get_db
 
@@ -79,8 +81,12 @@ def initialize_session(request: Request, box: str = Query(...), end_redirect_uri
             "created_at": new_session.created_at.isoformat(),
         }
     )
+    domain = "dashboard.osmsandbox.us"
+    if end_redirect_uri is not None:
+        domain = urlparse(end_redirect_uri).netloc
+
     # Set cookie_id with session_id
-    response.set_cookie(key="cookie_id", value=session_id, max_age=120, domain="dashboard.osmsandbox.us")
+    response.set_cookie(key="cookie_id", value=session_id, max_age=120, domain=domain)
     logging.info("Generated new cookie_id and saved to database")
     return response
 
