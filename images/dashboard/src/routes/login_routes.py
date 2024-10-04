@@ -99,7 +99,7 @@ def osm_authorization(
         raise HTTPException(status_code=404, detail="session_id not found")
 
     # Redirect to OSM auth
-    auth_url = f"{osm_instance_url}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={end_redirect_uri}&scope={osm_instance_scopes}"
+    auth_url = f"{osm_instance_url}/oauth2/authorize?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&scope={osm_instance_scopes}"
     logging.info(f"Redirecting to auth URL: {auth_url}")
     return RedirectResponse(url=auth_url, status_code=303)
 
