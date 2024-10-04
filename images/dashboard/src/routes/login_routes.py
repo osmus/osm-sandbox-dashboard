@@ -80,7 +80,7 @@ def initialize_session(request: Request, box: str = Query(...), end_redirect_uri
         }
     )
     # Set cookie_id with session_id
-    response.set_cookie(key="cookie_id", value=session_id, max_age=120)
+    response.set_cookie(key="cookie_id", value=session_id, max_age=120, domain="dashboard.osmsandbox.us")
     logging.info("Generated new cookie_id and saved to database")
     return response
 
@@ -137,7 +137,9 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
                 end_redirect_uri = f"https://{box}.{domain}/login?user={user}"
 
             logging.info(f"Redirecting to URL: {end_redirect_uri}")
-            return RedirectResponse(url=end_redirect_uri)
+            response = RedirectResponse(url=end_redirect_uri)
+            response.delete_cookie("cookie_id")
+            return response
         else:
             logging.error("Cookie ID not found")
             raise HTTPException(status_code=404, detail="Check if instance exists")
