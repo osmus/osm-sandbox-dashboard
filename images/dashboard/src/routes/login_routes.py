@@ -136,7 +136,7 @@ async def redirect_sandbox(request: Request, code: str, db: Session = Depends(ge
             box = session_obj.box
             user = session_obj.user
 
-            end_redirect_uri = f"{session_obj.end_redirect_uri}?box={box}user={user}"
+            end_redirect_uri = f"{session_obj.end_redirect_uri}?box={box}&user={user}"
 
             if session_obj.end_redirect_uri is None:
                 end_redirect_uri = f"https://{box}.{domain}/login?user={user}"
