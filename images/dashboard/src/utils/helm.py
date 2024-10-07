@@ -32,10 +32,13 @@ async def list_releases(namespace):
     return release_list
 
 
-def replace_placeholders_and_save(box_name, label_value):
+def replace_placeholders_and_save(box_name, label_value, seed_data_file_url):
     """Take a template YAML file and update it with the necessary values to deploy a box."""
     os.environ["BOX_NAME"] = box_name
     os.environ["LABEL_VALUE"] = label_value
+    os.environ["SHOULD_POPULATE_DB"] = bool(seed_data_file_url)
+    os.environ["URL_FILE_TO_IMPORT"] = seed_data_file_url
+    
     values_file = f"values/values_{box_name}.yaml"
     with open("values/osm-seed.template.yaml", "r") as file:
         file_content = file.read()

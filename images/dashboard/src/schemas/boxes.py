@@ -23,6 +23,12 @@ class BoxBase(BaseModel):
         description="Box's description",
         example="My new osm sandbox",
     )
+    seed_data_file_url: Optional[str] = Field(
+        ...,
+        title="Seed data file URL",
+        description="(Optional) An absolute public URL to a PBF file or bzipped OSM XML file to seed the database with upon startup.",
+        example="https://example.com/template.pbf",
+    )
 
     @validator("name")
     def validate_name(cls, value):
@@ -39,6 +45,7 @@ class BoxResponse(BaseModel):
     name: str
     subdomain: str
     resource_label: str
+    seed_data_file_url: Optional[str]
     description: str
     owner: str
     state: str
@@ -59,6 +66,7 @@ class BoxResponse(BaseModel):
             name=box.name,
             subdomain=box.subdomain,
             resource_label=box.resource_label,
+            seed_data_file_url=box.seed_data_file_url,
             description=box.description,
             owner=box.owner,
             state=box.state,

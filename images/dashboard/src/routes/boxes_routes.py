@@ -55,7 +55,7 @@ async def create_box(
         )
 
     # Create values file
-    values_file = replace_placeholders_and_save(box.name, box.resource_label)
+    values_file = replace_placeholders_and_save(box.name, box.resource_label, box.seed_data_file_url)
 
     # Create a new box
     try:
@@ -73,6 +73,7 @@ async def create_box(
         name=box.name,
         subdomain=f"{box.name}.{SANDBOX_DOMAIN}",
         resource_label=box.resource_label,
+        seed_data_file_url=box.seed_data_file_url,
         owner=token.username,
         description=box.description,
         state=StateEnum[state],
@@ -228,6 +229,7 @@ async def get_boxes_history(
                 state=box.state,
                 age=box.age,
                 resource_label=box.resource_label,
+                seed_data_file_url=box.seed_data_file_url,
                 description=box.description,
                 owner=box.owner,
                 subdomain=box.subdomain,

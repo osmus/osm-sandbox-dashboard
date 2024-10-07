@@ -62,13 +62,13 @@ osm-seed:
       cpuUtilization: 80
     sharedMemorySize: 16Mi
   populateApidb:
-    enabled: true
+    enabled: {{SHOULD_POPULATE_DB}}
     nodeSelector:
       enabled: true
       label_key: nodegroup_type
       label_value: {{LABEL_VALUE}}
     env:
-      URL_FILE_TO_IMPORT: "https://github.com/osmus/osm-sandbox-data/raw/refs/heads/main/ncem/cumberland_buildings.osm.bz2" 
+      URL_FILE_TO_IMPORT: {{URL_FILE_TO_IMPORT}}
     resources:
       enabled: false
   memcached:

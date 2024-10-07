@@ -19,6 +19,7 @@ class Boxes(Base):
     name = Column(String, nullable=False)
     subdomain = Column(String, nullable=False)
     resource_label = Column(String, nullable=False)
+    seed_data_file_url = Column(String, nullable=False)
     owner = Column(String, nullable=False)
     description = Column(String, nullable=False)
     state = Column(SQLEnum(StateEnum), nullable=False)
