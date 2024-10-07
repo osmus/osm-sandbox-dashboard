@@ -28,8 +28,7 @@ class BoxBase(BaseModel):
         ...,
         title="Seed data file URL",
         description="(Optional) An absolute public URL to a PBF file or bzipped OSM XML file to seed the database with upon startup.",
-        example="https://example.com/template.pbf",
-        default=None
+        example="https://example.com/template.pbf"
     )]]
 
     @validator("name")
