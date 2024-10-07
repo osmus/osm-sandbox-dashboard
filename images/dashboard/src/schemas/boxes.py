@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from typing import Optional
+from typing_extensions import Annotated
 from datetime import datetime
 import re
 
@@ -23,12 +24,13 @@ class BoxBase(BaseModel):
         description="Box's description",
         example="My new osm sandbox",
     )
-    seed_data_file_url: Optional[str] = Field(
+    seed_data_file_url: Optional[Annotated[str, Field(
         ...,
         title="Seed data file URL",
         description="(Optional) An absolute public URL to a PBF file or bzipped OSM XML file to seed the database with upon startup.",
         example="https://example.com/template.pbf",
-    )
+        default=None
+    )]]
 
     @validator("name")
     def validate_name(cls, value):
