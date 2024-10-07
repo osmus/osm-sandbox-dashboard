@@ -29,7 +29,7 @@ class BoxBase(BaseModel):
         title="Seed data file URL",
         description="(Optional) An absolute public URL to a PBF file or bzipped OSM XML file to seed the database with upon startup.",
         example="https://example.com/template.pbf"
-    )]]
+    )]] = None
 
     @validator("name")
     def validate_name(cls, value):
