@@ -32,7 +32,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GHCR_GITHUB_TOKEN }}
       - name: Staging - substitute secrets
         if: github.ref == 'refs/heads/staging'
-        uses: bluwy/substitute-string-action@v1
+        uses: bluwy/substitute-string-action@v3
         with:
           _input-file: 'values.staging.template.yaml'
           _format-key: '{{key}}'
@@ -53,7 +53,7 @@ jobs:
           EKS_CLUSTER: ${{ secrets.EKS_CLUSTER }}
       - name: Production - substitute secrets
         if: github.ref == 'refs/heads/main'
-        uses: bluwy/substitute-string-action@v1
+        uses: bluwy/substitute-string-action@v3
         with:
           _input-file: 'values.production.template.yaml'
           _format-key: '{{key}}'
