@@ -44,5 +44,7 @@ data:
     SANDBOX_ORGANIZATION_NAME: {{ .Values.dashboard.env.SANDBOX_ORGANIZATION_NAME | quote }}
     SANDBOX_WEBSITE_STATUS: {{ .Values.dashboard.env.SANDBOX_WEBSITE_STATUS | quote }}
     SANDBOX_BACKUP_FILE_URL: {{ .Values.dashboard.env.SANDBOX_BACKUP_FILE_URL | quote }}
+    TM_OAUTH_CLIENT_ID: {{ .Values.dashboard.env.TM_OAUTH_CLIENT_ID | quote }}
+    TM_OAUTH_CLIENT_SECRET_HASHED: {{ .Values.dashboard.env.TM_OAUTH_CLIENT_SECRET_HASHED | quote }}
 
 {{- end }}

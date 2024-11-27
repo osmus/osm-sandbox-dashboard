@@ -48,7 +48,7 @@ dashboard:
     SECRET_KEY: {{SECRET_KEY}}
     
     #################### Sandbox env vars ####################
-    OSM_SANDBOX_CHART: https://osm-sandbox.github.io/osm-sandbox-deploy/osm-sandbox-deploy-0.0.1-0.dev.git.36.hd380aee.tgz
+    OSM_SANDBOX_CHART: https://osm-sandbox.github.io/osm-sandbox-deploy/osm-sandbox-deploy-0.0.1-0.dev.git.1.h150bcbe.tgz
     SANDBOX_NAMESPACE: 'default'
 
     #################### Sandbox Database env vars ####################
@@ -74,6 +74,8 @@ dashboard:
     SANDBOX_ORGANIZATION_NAME: OpenStreetMap-Sandbox
     SANDBOX_WEBSITE_STATUS: "online"
     SANDBOX_BACKUP_FILE_URL: {{SANDBOX_BACKUP_FILE_URL}}
+    TM_OAUTH_CLIENT_ID: {{TM_OAUTH_CLIENT_ID}}
+    TM_OAUTH_CLIENT_SECRET_HASHED: {{TM_OAUTH_CLIENT_SECRET_HASHED}}
 
   resources:
     enabled: false
