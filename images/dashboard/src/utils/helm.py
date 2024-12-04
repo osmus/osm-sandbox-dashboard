@@ -38,9 +38,6 @@ def replace_placeholders_and_save(box_name, label_value, seed_data_file_url):
     os.environ["LABEL_VALUE"] = label_value
     os.environ["SHOULD_POPULATE_DB"] = str(bool(seed_data_file_url)).lower()
     os.environ["URL_FILE_TO_IMPORT"] = f'"{seed_data_file_url}"'
-    # TODO: Get actual environment variable replacement working
-    os.environ["TM_OAUTH_CLIENT_ID"] = "7yDot3Plq2g0cbapXcTEpSKldYWDk-BTyeUNl6YtC0I"
-    os.environ["SANDBOX_TM_OAUTH_CLIENT_SECRET_HASHED"] = "3964467e2b098792858b163f69f673a5846254dc8af671d33ef03b36a9cac6e8"
     
     values_file = f"values/values_{box_name}.yaml"
     with open("values/osm-seed.template.yaml", "r") as file:
