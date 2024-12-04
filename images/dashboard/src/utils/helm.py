@@ -45,9 +45,10 @@ def replace_placeholders_and_save(box_name, label_value, seed_data_file_url):
     placeholders = re.findall(r"{{(.*?)}}", file_content)
     for placeholder in placeholders:
         env_var = placeholder.strip()
-        replacement_value = os.getenv(env_var, "")
-        if not replacement_value:
+        replacement_value = os.getenv(env_var, None)
+        if replacement_value is None:
             logging.warning(f"Environment variable {env_var} is not set.")
+            replacement_value = ""
         file_content = file_content.replace(f"{{{{{env_var}}}}}", replacement_value)
     with open(values_file, "w") as file:
         file.write(file_content)
