@@ -45,7 +45,7 @@
                     data.forEach(box => {
                         const option = document.createElement('option');
                         option.value = box.name;
-                        option.textContent = box.name;
+                        option.textContent = `${box.name} (${box.license})`;
                         boxSelect.appendChild(option);
                     });
                 })

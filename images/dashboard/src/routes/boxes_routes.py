@@ -40,6 +40,12 @@ async def create_box(
     verify_role(token, ["creator", "admin"])
     logging.info("Attempting to create a new box.")
 
+    if box.license != 'cc0' and box.license != 'odbl':
+        logging.warning(f"License must be either 'cc0' or 'odbl'.")
+        raise HTTPException(
+            status_code=400, detail="License must be either 'cc0' or 'odbl'"
+        )
+
     # Check if there is an existing box with the same name and state "Running" or "Pending"
     existing_box = (
         db.query(Boxes)
@@ -73,6 +79,7 @@ async def create_box(
         name=box.name,
         subdomain=f"{box.name}.{SANDBOX_DOMAIN}",
         resource_label=box.resource_label,
+        license=box.license,
         seed_data_file_url=box.seed_data_file_url,
         owner=token.username,
         description=box.description,
@@ -229,6 +236,7 @@ async def get_boxes_history(
                 state=box.state,
                 age=box.age,
                 resource_label=box.resource_label,
+                license=box.license,
                 seed_data_file_url=box.seed_data_file_url,
                 description=box.description,
                 owner=box.owner,

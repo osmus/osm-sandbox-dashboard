@@ -23,7 +23,13 @@ class BoxBase(BaseModel):
         title="Description",
         description="Box's description",
         example="My new osm sandbox",
-    )
+    ),
+    license: str = Field(
+        ...,
+        title="License",
+        description="Box's license. Must be either 'cc0' or 'odbl'.",
+        example="cc0",
+    ),
     seed_data_file_url: Optional[Annotated[str, Field(
         ...,
         title="Seed data file URL",
@@ -46,6 +52,7 @@ class BoxResponse(BaseModel):
     name: str
     subdomain: str
     resource_label: str
+    license: str
     seed_data_file_url: Optional[str]
     description: str
     owner: str
@@ -67,6 +74,7 @@ class BoxResponse(BaseModel):
             name=box.name,
             subdomain=box.subdomain,
             resource_label=box.resource_label,
+            license=box.license,
             seed_data_file_url=box.seed_data_file_url,
             description=box.description,
             owner=box.owner,
