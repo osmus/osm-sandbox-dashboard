@@ -20,7 +20,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.7'
+          python-version: '3.13'
       - name: Setup git
         run: git config --global user.email "noreply@geocompas.org" && git config --global user.name "Github Action"
       - name: Install Chartpress
